@@ -13,7 +13,20 @@ class AppMedia {
   static const String montmeloCircuit = 'assets/images/montmelo.png';
   static const String gillesVilleneuveCircuit =
       'assets/images/gilles_villeneuve.png';
-  // static const String redBullRingCircuit = 'assets/images/red_bull_ring.png';
+  static const String redBullRingCircuit = 'assets/images/austria.png';
+  static const String silverstoneCircuit = 'assets/images/silverstone.png';
+  static const String belgianCircuit = 'assets/images/belgian.png';
+  static const String hangarianCircuit = 'assets/images/hangarian.png';
+  static const String dutchCircuit = 'assets/images/dutch.png';
+  static const String monzaCircuit = 'assets/images/monza.png';
+  static const String bakuCircuit = 'assets/images/baku.png';
+  static const String singaporeCircuit = 'assets/images/singapore.png';
+  static const String austinCircuit = 'assets/images/austin.png';
+  static const String mexicanCircuit = 'assets/images/mexican.png';
+  static const String brazilCircuit = 'assets/images/brazil.png';
+  static const String vegasCircuit = 'assets/images/vegas.png';
+  static const String qatarCircuit = 'assets/images/qatar.png';
+  static const String dhabiCircuit = 'assets/images/dhabi.png';
 
   static Map<String, String> circuitImages = {
     TrackIdentifier.australian: albertParkCircuit,
@@ -26,7 +39,20 @@ class AppMedia {
     TrackIdentifier.emola: monacoCircuit,
     TrackIdentifier.barcelona: montmeloCircuit,
     TrackIdentifier.canada: gillesVilleneuveCircuit,
-    // TrackIdentifier.austria: redBullRingCircuit,
+    TrackIdentifier.austria: redBullRingCircuit,
+    TrackIdentifier.british: silverstoneCircuit,
+    TrackIdentifier.belgium: belgianCircuit,
+    TrackIdentifier.hangary: hangarianCircuit,
+    TrackIdentifier.dutch: dutchCircuit,
+    TrackIdentifier.monza: monzaCircuit,
+    TrackIdentifier.baku: bakuCircuit,
+    TrackIdentifier.singapore: singaporeCircuit,
+    TrackIdentifier.austin: austinCircuit,
+    TrackIdentifier.mexican: mexicanCircuit,
+    TrackIdentifier.brazil: brazilCircuit,
+    TrackIdentifier.vegas: vegasCircuit,
+    TrackIdentifier.qatar: qatarCircuit,
+    TrackIdentifier.dhabi: dhabiCircuit,
   };
 
   static String getCircuitImageById(String? circuitId) {
