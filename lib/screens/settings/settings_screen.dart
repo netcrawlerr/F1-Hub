@@ -67,44 +67,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            sectionTitle("About Developer"),
-
-            ListTile(
-              title: const Text(
-                "GitHub Profile",
-                style: TextStyle(fontSize: 14, fontFamily: "F1"),
-              ),
-              trailing: FaIcon(
-                FontAwesomeIcons.github,
-                color: isDarkMode ? Colors.white : Colors.black54,
-                size: 20,
-              ),
-              onTap: () async {
-                final url = Uri.parse("https://github.com/netcrawlerr");
-                if (await canLaunchUrl(url)) {
-                  launchUrl(url, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
-
-            ListTile(
-              title: const Text(
-                "Telegram Channel",
-                style: TextStyle(fontSize: 14, fontFamily: "F1"),
-              ),
-              trailing: FaIcon(
-                FontAwesomeIcons.telegram,
-                color: isDarkMode ? Colors.white : Colors.black54,
-                size: 20,
-              ),
-              onTap: () async {
-                final url = Uri.parse("https://t.me/mkdenn");
-                if (await canLaunchUrl(url)) {
-                  launchUrl(url, mode: LaunchMode.externalApplication);
-                }
-              },
-            ),
-
             sectionTitle("Version an Releases"),
 
             ListTile(
@@ -156,18 +118,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 );
               },
             ),
+
+            // ListTile(
+            //   title: const Text(
+            //     "Checkout new updates",
+            //     style: TextStyle(fontSize: 14, fontFamily: "F1"),
+            //   ),
+            //   trailing: FaIcon(
+            //     FontAwesomeIcons.speakerDeck,
+            //     color: isDarkMode ? Colors.white : Colors.black54,
+            //     size: 20,
+            //   ),
+            //   onTap: () async {
+            //     final url = Uri.parse("https://github.com/netcrawlerr/F1-Hub");
+            //     if (await canLaunchUrl(url)) {
+            //       launchUrl(url, mode: LaunchMode.externalApplication);
+            //     }
+            //   },
+            // ),
+            sectionTitle("About Developer"),
+
             ListTile(
               title: const Text(
-                "Checkout new updates",
+                "GitHub Profile",
                 style: TextStyle(fontSize: 14, fontFamily: "F1"),
               ),
               trailing: FaIcon(
-                FontAwesomeIcons.speakerDeck,
+                FontAwesomeIcons.github,
                 color: isDarkMode ? Colors.white : Colors.black54,
                 size: 20,
               ),
               onTap: () async {
-                final url = Uri.parse("https://github.com/netcrawlerr/F1-Hub");
+                final url = Uri.parse("https://github.com/netcrawlerr");
+                if (await canLaunchUrl(url)) {
+                  launchUrl(url, mode: LaunchMode.externalApplication);
+                }
+              },
+            ),
+
+            ListTile(
+              title: const Text(
+                "Telegram Channel",
+                style: TextStyle(fontSize: 14, fontFamily: "F1"),
+              ),
+              trailing: FaIcon(
+                FontAwesomeIcons.telegram,
+                color: isDarkMode ? Colors.white : Colors.black54,
+                size: 20,
+              ),
+              onTap: () async {
+                final url = Uri.parse("https://t.me/mkdenn");
                 if (await canLaunchUrl(url)) {
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 }
