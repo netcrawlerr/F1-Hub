@@ -66,8 +66,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
               label: 'Standing',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.settings_outlined),
-              label: 'Settings',
+              icon: Icon(Icons.more_horiz),
+              label: 'More',
             ),
           ],
         ),

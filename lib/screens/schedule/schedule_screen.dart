@@ -96,7 +96,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    "Oops! Countdown couldn't be loaded. 🏁",
+                    "Oops! Schedule couldn't be loaded. 🏁",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,

@@ -105,7 +105,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               },
             ),
 
-            sectionTitle("App Version"),
+            sectionTitle("Version an Releases"),
 
             ListTile(
               title: const Text(
@@ -115,7 +115,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               subtitle: Text("v1.0.0", style: AppStyles.smallText(context)),
               trailing: const Icon(
                 Icons.info_outline,
-                size: 18,
+                size: 20,
                 color: Colors.grey,
               ),
               onTap: () {
@@ -154,6 +154,23 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ],
                       ),
                 );
+              },
+            ),
+            ListTile(
+              title: const Text(
+                "Checkout new updates",
+                style: TextStyle(fontSize: 14, fontFamily: "F1"),
+              ),
+              trailing: FaIcon(
+                FontAwesomeIcons.speakerDeck,
+                color: isDarkMode ? Colors.white : Colors.black54,
+                size: 20,
+              ),
+              onTap: () async {
+                final url = Uri.parse("https://github.com/netcrawlerr/F1-Hub");
+                if (await canLaunchUrl(url)) {
+                  launchUrl(url, mode: LaunchMode.externalApplication);
+                }
               },
             ),
           ],

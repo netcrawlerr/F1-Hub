@@ -63,7 +63,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                               fit: BoxFit.cover,
                               errorBuilder:
                                   (context, error, stackTrace) => Image.asset(
-                                    'assets/placeholder.png',
+                                    'assets/news-placeholder.png',
                                     width: double.infinity,
                                     height: 200,
                                     fit: BoxFit.cover,
