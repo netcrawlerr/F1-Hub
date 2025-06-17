@@ -1,0 +1,57 @@
+name: f1_hub
+description: "A new Flutter project."
+
+publish_to: 'none'  
+
+ 
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  provider: ^6.1.0
+  google_nav_bar: ^5.0.7
+  cupertino_icons: ^1.0.8
+  http: ^1.4.0
+  flutter_dotenv: ^5.2.1
+  url_launcher: ^6.3.1
+  timeago: ^3.7.1
+  home_widget: ^0.8.0
+  shared_preferences: ^2.5.3
+  flutter_native_splash: ^2.4.6
+  flutter_launcher_icons: ^0.14.4
+  font_awesome_flutter: ^10.8.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter_native_splash:
+  color: "#ffffff" # Background color
+  image: assets/images/formula-splash.png
+  android: true
+  ios: true
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: assets/images/formula-splash.png
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - .env
+
+  fonts:
+    - family: F1
+      fonts:
+        - asset: assets/fonts/F1-Regular.ttf
+        - asset: assets/fonts/F1-Bold.ttf
