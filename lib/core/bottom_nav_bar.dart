@@ -63,7 +63,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.assessment_outlined),
-              label: 'Standing',
+              label: 'Standings',
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.more_horiz),

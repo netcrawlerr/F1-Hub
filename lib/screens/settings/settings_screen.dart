@@ -67,7 +67,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
 
-            sectionTitle("Version an Releases"),
+            sectionTitle("Version and Releases"),
 
             ListTile(
               title: const Text(
@@ -140,7 +140,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             ListTile(
               title: const Text(
-                "GitHub Profile",
+                "GitHub",
                 style: TextStyle(fontSize: 14, fontFamily: "F1"),
               ),
               trailing: FaIcon(
@@ -158,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             ListTile(
               title: const Text(
-                "Telegram Channel",
+                "Telegram",
                 style: TextStyle(fontSize: 14, fontFamily: "F1"),
               ),
               trailing: FaIcon(
