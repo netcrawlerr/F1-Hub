@@ -16,7 +16,7 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool notificationsEnabled = false;
+  bool notificationsEnabled = true;
 
   @override
   void initState() {
