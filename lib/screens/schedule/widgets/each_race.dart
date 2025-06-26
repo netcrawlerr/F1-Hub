@@ -50,7 +50,6 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
 
     final raceName = race['raceName'] ?? 'Unknown Grand Prix';
     final raceDate = race['schedule']?['race']?['date'] ?? 'TBD';
-    final raceTime = race['schedule']?['race']?['time'] ?? 'TBD';
     final circuitName = race['circuit']?["circuitName"] ?? 'Unknown Circuit';
     final country = race['circuit']?['country'];
     final city = race['circuit']?['city'];
@@ -86,7 +85,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
       schedule?['date'],
       schedule?['time'],
     );
-    final localTime12 = RaceTimeFormatter.formatUtcToLocal12(
+    RaceTimeFormatter.formatUtcToLocal12(
       schedule?['date'],
       schedule?['time'],
     );

@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:f1_hub/utils/next_race_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/base_layout.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
@@ -7,7 +9,7 @@ import 'package:f1_hub/screens/news/news_detail_screen.dart';
 import 'package:f1_hub/screens/news/widgets/new_race_countdown_card.dart';
 import 'package:f1_hub/screens/news/widgets/news_card.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -19,24 +21,17 @@ class NewsScreen extends StatefulWidget {
 class _NewsScreenState extends State<NewsScreen> {
   Duration? remaining;
   String? raceName;
+  String? raceDate;
+  String? raceTime;
   bool isLoading = true;
-
+  Timer? countdownTimer;
   List<Article> articles = [];
-
-  // String appGroupId = "group"
 
   @override
   void initState() {
     super.initState();
     fetchNextRaceCountdown();
     fetchNewsArticles();
-  }
-
-  Future<void> saveRaceToPrefs(String gpTitle, DateTime raceDateTimeUtc) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    await prefs.setString("gp_title", gpTitle);
-    await prefs.setInt("race_time", raceDateTimeUtc.millisecondsSinceEpoch);
   }
 
   Future<void> fetchNewsArticles() async {
@@ -46,19 +41,9 @@ class _NewsScreenState extends State<NewsScreen> {
       setState(() {
         articles = fetchedArticles;
       });
-    } catch (e) {
-      // do what ....
-    }
+      // ignore: empty_catches
+    } catch (e) {}
   }
-
-  // Future<void> triggerWidgetUpdate() async {
-  //   const platform = MethodChannel('com.netcrawler.f1_hub/widget');
-  //   try {
-  //     await platform.invokeMethod('updateWidgets');
-  //   } on PlatformException catch (e) {
-  //     print("Failed to trigger widget update: ${e.message}");
-  //   }
-  // }
 
   Future<void> fetchNextRaceCountdown() async {
     try {
@@ -69,28 +54,57 @@ class _NewsScreenState extends State<NewsScreen> {
 
       final dateStr = race['schedule']['race']['date'];
       final timeStr = race['schedule']['race']['time'];
+      final dateTimeStr =
+          '$dateStr${timeStr.startsWith('T') ? '' : 'T'}$timeStr';
 
-      final isoDateTimeString =
-          "$dateStr${timeStr.startsWith('T') ? '' : 'T'}$timeStr";
+      final localRaceDateTime = DateTime.parse(dateTimeStr).toLocal();
 
-      final raceDateTime = DateTime.parse(isoDateTimeString).toUtc();
-      final now = DateTime.now().toUtc();
+      raceDate = DateFormat('yyyy-MM-dd').format(localRaceDateTime);
+      raceTime = DateFormat('HH:mm:ss').format(localRaceDateTime);
 
-      final diff = raceDateTime.difference(now);
-      remaining = diff.isNegative ? Duration.zero : diff;
+      final now = DateTime.now();
+      remaining =
+          localRaceDateTime.isAfter(now)
+              ? localRaceDateTime.difference(now)
+              : Duration.zero;
 
-      await saveRaceToPrefs(raceName!, raceDateTime);
-      // await triggerWidgetUpdate();
+      startCountdown();
+
+      await renderNextRaceWidget(
+        context: context,
+        raceName: raceName!,
+        raceDate: raceDate!,
+        raceTime: raceTime!,
+      );
 
       setState(() {
         isLoading = false;
       });
     } catch (e) {
-      print("Error fetching next race countdown: $e");
       setState(() {
         isLoading = false;
       });
     }
+  }
+
+  void startCountdown() {
+    countdownTimer?.cancel();
+    countdownTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (!mounted || remaining == null || remaining!.inSeconds <= 0) {
+        countdownTimer?.cancel();
+        return;
+      }
+
+      setState(() {
+        remaining = remaining! - const Duration(seconds: 1);
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    countdownTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -107,7 +121,7 @@ class _NewsScreenState extends State<NewsScreen> {
           children: [
             if (isLoading)
               const Center(child: CircularProgressIndicator())
-            else if (remaining != null && raceName != null)
+            else if (raceDate != null)
               NewRaceCountdownCard(
                 gpTitle: raceName!,
                 initialRemainingTime: remaining!,
@@ -166,7 +180,6 @@ class _NewsScreenState extends State<NewsScreen> {
               ),
 
             const SizedBox(height: 20),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: Text(
@@ -174,9 +187,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 style: AppStyles.headline2(context),
               ),
             ),
-
             const SizedBox(height: 10),
-
             ...articles.map((article) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
@@ -191,7 +202,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   },
                 ),
               );
-            }).toList(),
+            }),
           ],
         ),
       ),
@@ -199,12 +210,6 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<void> _refreshNews() async {
-    setState(() {
-      // isLoading = true;
-    });
     await Future.wait([fetchNewsArticles(), fetchNextRaceCountdown()]);
-    setState(() {
-      // isLoading = false;
-    });
   }
 }
