@@ -17,6 +17,7 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool notificationsEnabled = true;
+  bool willNotificationsBeEverTurnedOnAnyTimeSoon = false;
 
   @override
   void initState() {
@@ -26,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Future<void> _loadNotificationPreference() async {
     final prefs = await SharedPreferences.getInstance();
-    final savedValue = prefs.getBool('notifications_enabled') ?? false;
+    final savedValue = prefs.getBool('notifications_enabled') ?? true;
 
     setState(() {
       notificationsEnabled = savedValue;
