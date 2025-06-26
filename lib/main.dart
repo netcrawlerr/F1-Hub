@@ -8,14 +8,20 @@ import 'package:f1_hub/screens/news/news_screen.dart';
 import 'package:f1_hub/screens/schedule/schedule_screen.dart';
 import 'package:f1_hub/screens/settings/settings_screen.dart';
 import 'package:f1_hub/screens/standing/standing_screen.dart';
+import 'package:f1_hub/services/notification_services.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationServices().initNotificationService();
   await dotenv.load(fileName: ".env");
+
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadTheme();
   runApp(
-    MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => ThemeProvider())],
-      child: MyApp(),
+    ChangeNotifierProvider<ThemeProvider>.value(
+      value: themeProvider,
+      child: const MyApp(),
     ),
   );
 }

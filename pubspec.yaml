@@ -25,6 +25,9 @@ dependencies:
   flutter_launcher_icons: ^0.14.4
   font_awesome_flutter: ^10.8.0
   intl: ^0.20.2
+  flutter_local_notifications: ^19.3.0
+  timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
 
 dev_dependencies:
   flutter_test:

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:f1_hub/providers/theme_provider.dart';
+import 'package:f1_hub/services/notification_services.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:f1_hub/core/base_layout.dart';
 
@@ -14,7 +16,33 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool notificationsEnabled = true;
+  bool notificationsEnabled = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadNotificationPreference();
+  }
+
+  Future<void> _loadNotificationPreference() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedValue = prefs.getBool('notifications_enabled') ?? false;
+
+    setState(() {
+      notificationsEnabled = savedValue;
+    });
+
+    if (savedValue) {
+      await NotificationServices().scheduleNotification(
+        title: "Reminder",
+        body: "Don't miss today's action 🏎️ 🔥",
+        hour: 20,
+        minute: 00,
+      );
+    } else {
+      await NotificationServices().cancelNotifications();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,17 +67,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     "Enable Notifications",
                     style: TextStyle(fontSize: 14, fontFamily: "F1"),
                   ),
-                  Text(
-                    "Soon ...",
-                    style: AppStyles.smallText(
-                      context,
-                    ).copyWith(color: AppStyles.orange),
-                  ),
+                  // Text(
+                  //   "Soon ...",
+                  //   style: AppStyles.smallText(
+                  //     context,
+                  //   ).copyWith(color: AppStyles.orange),
+                  // ),
                 ],
               ),
               trailing: Switch(
                 value: notificationsEnabled,
-                onChanged: (val) => setState(() => notificationsEnabled = val),
+                onChanged: (val) async {
+                  setState(() => notificationsEnabled = val);
+
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('notifications_enabled', val);
+
+                  if (val) {
+                    await NotificationServices().scheduleNotification(
+                      title: "Reminder",
+                      body: "Don't miss today's action 🏎️ 🔥",
+                      hour: 20,
+                      minute: 00,
+                    );
+                  } else {
+                    await NotificationServices().cancelNotifications();
+                  }
+                },
               ),
             ),
 
