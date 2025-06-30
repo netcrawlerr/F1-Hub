@@ -1,3 +1,6 @@
+import 'package:f1_hub/core/styles/app_styles.dart';
+import 'package:f1_hub/screens/standing/widgets/constructor_standings_list.dart';
+import 'package:f1_hub/screens/standing/widgets/driver_standings_list.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/base_layout.dart';
 import 'package:f1_hub/services/api_services.dart';
@@ -144,7 +147,7 @@ class _StandingScreenState extends State<StandingScreen> {
             label: const Text("Retry"),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
+              foregroundColor: AppStyles.darkModeTextColor,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
@@ -165,59 +168,5 @@ class _StandingScreenState extends State<StandingScreen> {
       default:
         return Container();
     }
-  }
-}
-
-class DriverStandingsList extends StatelessWidget {
-  final List<Driver> drivers;
-
-  const DriverStandingsList({super.key, required this.drivers});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const DriverStandingsHeader(),
-        const Divider(height: 1, thickness: 1),
-        ...drivers.map((driver) {
-          return Column(
-            children: [
-              DriverStanding(driver: driver),
-              const Divider(height: 1, indent: 16, endIndent: 16),
-            ],
-          );
-        }).toList(),
-      ],
-    );
-  }
-}
-
-class ConstructorStandingsList extends StatelessWidget {
-  final List<Constructor> constructors;
-
-  const ConstructorStandingsList({super.key, required this.constructors});
-
-  @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Column(
-      children: [
-        const ConstructorStandingsHeader(),
-        const Divider(height: 1, thickness: 1),
-        SizedBox(
-          height: screenHeight * 0.85,
-          child: ListView.separated(
-            itemCount: constructors.length,
-            itemBuilder: (context, index) {
-              return ConstructorStanding(constructor: constructors[index]);
-            },
-            separatorBuilder:
-                (context, index) =>
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-          ),
-        ),
-      ],
-    );
   }
 }

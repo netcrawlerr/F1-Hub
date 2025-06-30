@@ -85,13 +85,9 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
       schedule?['date'],
       schedule?['time'],
     );
-    RaceTimeFormatter.formatUtcToLocal12(
-      schedule?['date'],
-      schedule?['time'],
-    );
+    RaceTimeFormatter.formatUtcToLocal12(schedule?['date'], schedule?['time']);
 
-    BoxDecoration baseDecoration =
-        AppStyles.card(context) ?? const BoxDecoration();
+    BoxDecoration baseDecoration = AppStyles.card(context);
 
     BoxDecoration newDecorationWithBorder = baseDecoration.copyWith(
       border: Border(
@@ -135,7 +131,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                   displayedStatus,
                   style: AppStyles.smallText(
                     context,
-                  )?.copyWith(color: Colors.white),
+                  )?.copyWith(color: AppStyles.darkModeTextColor),
                 ),
               ),
               InkWell(

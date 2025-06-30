@@ -165,7 +165,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       label: const Text("Retry"),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
-                        foregroundColor: Colors.white,
+                        foregroundColor: AppStyles.darkModeTextColor,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 20,
                           vertical: 12,

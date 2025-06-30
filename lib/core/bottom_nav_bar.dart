@@ -45,7 +45,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
           onTap: _onItemTapped,
           selectedItemColor: Colors.indigoAccent,
           unselectedItemColor: isDark ? Colors.grey[500] : Colors.grey[600],
-          backgroundColor: isDark ? AppStyles.bgColorDark : Colors.white,
+          backgroundColor:
+              isDark ? AppStyles.bgColorDark : AppStyles.darkModeTextColor,
           type: BottomNavigationBarType.fixed,
           selectedLabelStyle: const TextStyle(
             fontFamily: 'F1',

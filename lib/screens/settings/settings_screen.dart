@@ -171,7 +171,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             //   ),
             //   trailing: FaIcon(
             //     FontAwesomeIcons.speakerDeck,
-            //     color: isDarkMode ? Colors.white : Colors.black54,
+            //     color: isDarkMode ? AppStyles.darkModeTextColor : Colors.black54,
             //     size: 20,
             //   ),
             //   onTap: () async {
@@ -190,7 +190,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               trailing: FaIcon(
                 FontAwesomeIcons.github,
-                color: isDarkMode ? Colors.white : Colors.black54,
+                color:
+                    isDarkMode ? AppStyles.darkModeTextColor : Colors.black54,
                 size: 20,
               ),
               onTap: () async {
@@ -208,7 +209,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               trailing: FaIcon(
                 FontAwesomeIcons.telegram,
-                color: isDarkMode ? Colors.white : Colors.black54,
+                color:
+                    isDarkMode ? AppStyles.darkModeTextColor : Colors.black54,
                 size: 20,
               ),
               onTap: () async {

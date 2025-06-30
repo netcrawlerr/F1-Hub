@@ -60,8 +60,11 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: AppStyles.bgColorDark,
         primaryColor: const Color(0xFF0F3D1E),
         textTheme: const TextTheme(
-          bodyLarge: TextStyle(color: Colors.white, fontSize: 30),
-          bodyMedium: TextStyle(color: Colors.white70),
+          bodyLarge: TextStyle(
+            color: AppStyles.darkModeTextColor,
+            fontSize: 30,
+          ),
+          bodyMedium: TextStyle(color: AppStyles.darkModeTextColor),
         ),
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(

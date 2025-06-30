@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:f1_hub/core/styles/app_styles.dart'; // Assuming you have AppStyles
+import 'package:f1_hub/core/styles/app_styles.dart';
 
 // Model for Constructor Data
 class Constructor {
@@ -7,7 +7,7 @@ class Constructor {
   final String name;
   final int points;
   final int wins;
-  final String? logoUrl; // Optional: for team logo
+  final String? logoUrl;
 
   Constructor({
     required this.position,
@@ -45,17 +45,7 @@ class ConstructorStanding extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Optional: Constructor Logo
-                // if (constructor.logoUrl != null && constructor.logoUrl!.isNotEmpty)
-                //   Padding(
-                //     padding: const EdgeInsets.only(right: 8.0),
-                //     child: Image.network( // Or AssetImage
-                //       constructor.logoUrl!,
-                //       width: 24, // Adjust size
-                //       height: 24, // Adjust size
-                //       errorBuilder: (context, error, stackTrace) => Icon(Icons.shield_outlined, size: 24),
-                //     ),
-                //   ),
+
                 Expanded(
                   child: Text(
                     constructor.name,
@@ -100,7 +90,6 @@ class ConstructorStanding extends StatelessWidget {
   }
 }
 
-// Header widget for the Constructor Standings List
 class ConstructorStandingsHeader extends StatelessWidget {
   const ConstructorStandingsHeader({super.key});
 

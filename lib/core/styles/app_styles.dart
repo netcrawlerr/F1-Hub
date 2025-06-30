@@ -8,7 +8,6 @@ class AppStyles {
   static const mutedText = Color(0xffa7a7a8);
 
   static const lightModeTextColor = Color.fromARGB(255, 53, 67, 72);
-  // static const lightModeTextColor = Color.fromARGB(255, 40, 117, 103);
   static const darkModeTextColor = Colors.white;
 
   static const Color primary = Color(0xFFE10600);
@@ -100,13 +99,6 @@ class AppStyles {
     );
   }
 
-  // Spacing
-  static const double spacingXS = 4.0;
-  static const double spacingSM = 8.0;
-  static const double spacingMD = 16.0;
-  static const double spacingLG = 24.0;
-  static const double spacingXL = 32.0;
-
   // decoration
   static BoxDecoration card(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -127,23 +119,4 @@ class AppStyles {
       ],
     );
   }
-
-  static final InputDecoration input = InputDecoration(
-    filled: true,
-    fillColor: secondary,
-    border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide.none,
-    ),
-    contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-  );
-
-  // btn Styles
-  static final ButtonStyle primaryButton = ElevatedButton.styleFrom(
-    backgroundColor: primary,
-    foregroundColor: Colors.white,
-    textStyle: const TextStyle(fontWeight: FontWeight.bold),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-    padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
-  );
 }

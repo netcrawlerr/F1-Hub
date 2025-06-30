@@ -1,3 +1,4 @@
+import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/screens/news/widgets/news_card.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -88,8 +89,10 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                           decoration: BoxDecoration(
                             color:
                                 _currentImageIndex == index
-                                    ? Colors.white
-                                    : Colors.white.withOpacity(0.4),
+                                    ? AppStyles.darkModeTextColor
+                                    : AppStyles.darkModeTextColor.withOpacity(
+                                      0.4,
+                                    ),
                             shape: BoxShape.circle,
                           ),
                         ),

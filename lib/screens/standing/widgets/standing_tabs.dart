@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
 
-// Enum to represent the active tab
 enum StandingType { drivers, constructors }
 
 class StandingTabs extends StatelessWidget {
@@ -27,11 +26,9 @@ class StandingTabs extends StatelessWidget {
       context,
     )?.copyWith(color: AppStyles.mutedText);
 
-    // Common decoration for the entire tab group
     BoxDecoration groupDecoration = AppStyles.card(context);
 
     return Container(
-      // Wrap Row in a Container for shared decoration
       decoration: groupDecoration,
       child: Row(
         children: [
@@ -45,8 +42,7 @@ class StandingTabs extends StatelessWidget {
                   vertical: 12,
                   horizontal: 10,
                 ),
-                // Decoration is now handled by the parent Container for a unified look,
-                // or you can apply individual decorations if you want different active/inactive states
+
                 alignment: Alignment.center,
                 child: Text(
                   "Drivers",
@@ -60,7 +56,6 @@ class StandingTabs extends StatelessWidget {
             child: GestureDetector(
               onTap: () => onTabSelected(StandingType.constructors),
               child: Container(
-                // No margin here
                 padding: const EdgeInsets.symmetric(
                   vertical: 12,
                   horizontal: 10,

@@ -122,7 +122,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     label: const Text("Retry"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppStyles.darkModeTextColor,
                     ),
                   ),
                 ],

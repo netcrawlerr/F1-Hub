@@ -59,7 +59,7 @@ Future<void> renderNextRaceWidget({
                   fontFamily: 'F1',
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: AppStyles.darkModeTextColor,
                   shadows: [
                     Shadow(
                       blurRadius: 3,

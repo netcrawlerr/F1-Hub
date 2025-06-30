@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:f1_hub/core/styles/app_styles.dart'; // Assuming you have AppStyles
+import 'package:f1_hub/core/styles/app_styles.dart';
 
-// Model for Driver Data (optional but good practice)
+// Model for Driver Data
 class Driver {
   final int position;
   final String name;
-  final String team; // Team name
+  final String team;
   final int points;
   final int wins;
-  final String? avatarUrl; // Optional: for driver image
+  final String? avatarUrl;
 
   Driver({
     required this.position,
@@ -34,11 +34,11 @@ class DriverStanding extends StatelessWidget {
         children: [
           // Left side: # Driver (and Team)
           Expanded(
-            flex: 3, // Give more space to driver/team name
+            flex: 3,
             child: Row(
               children: [
                 SizedBox(
-                  width: 30, // Fixed width for position
+                  width: 30,
                   child: Text(
                     driver.position.toString(),
                     style: AppStyles.body(
@@ -48,16 +48,7 @@ class DriverStanding extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // Optional: Driver Avatar
-                // if (driver.avatarUrl != null && driver.avatarUrl!.isNotEmpty)
-                //   Padding(
-                //     padding: const EdgeInsets.only(right: 8.0),
-                //     child: CircleAvatar(
-                //       radius: 16,
-                //       backgroundImage: NetworkImage(driver.avatarUrl!),
-                //       backgroundColor: Colors.grey[300],
-                //     ),
-                //   ),
+
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -84,21 +75,21 @@ class DriverStanding extends StatelessWidget {
           ),
           // Right side: Points Wins
           Expanded(
-            flex: 2, // Adjust flex factor as needed
+            flex: 2,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 SizedBox(
-                  width: 50, // Fixed width for points
+                  width: 50,
                   child: Text(
                     driver.points.toString(),
                     style: AppStyles.body(context),
                     textAlign: TextAlign.end,
                   ),
                 ),
-                const SizedBox(width: 16), // Spacing between points and wins
+                const SizedBox(width: 16),
                 SizedBox(
-                  width: 40, // Fixed width for wins
+                  width: 40,
                   child: Text(
                     driver.wins.toString(),
                     style: AppStyles.body(context),
@@ -114,7 +105,6 @@ class DriverStanding extends StatelessWidget {
   }
 }
 
-// Header widget for the Driver Standings List
 class DriverStandingsHeader extends StatelessWidget {
   const DriverStandingsHeader({super.key});
 
@@ -128,7 +118,7 @@ class DriverStandingsHeader extends StatelessWidget {
           Expanded(
             flex: 3,
             child: Text(
-              "# Driver", // Combined header for position and driver name
+              "# Driver",
               style: AppStyles.smallText(context)?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppStyles.mutedText,
