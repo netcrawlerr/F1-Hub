@@ -1,0 +1,16 @@
+🏎️ F1 Hub is a clean and modern Formula 1 companion app built with Flutter, designed for fans who want quick access to the most essential F1 info.
+
+Whether you’re waiting for lights out or checking the standings mid-season, F1 Hub keeps you updated with:
+
+• Next Race Countdown — never miss a start  
+• Full Race Calendar — see upcoming and past events  
+• Race Results and Standings — for drivers and constructors  
+• F1 News — trending and featured coverage  
+• Track Info & Circuit Visuals  
+• Live Driver Standings  
+• Dark Mode Support  
+• Pull to Refresh and Retry on Errors
+
+It’s open-source, licensed under MIT, and free to use, modify, and share. More exciting features like live telemetry, lap times, race alerts, and interactive track maps are coming soon!
+
+Built with ❤️ by an F1 fan. (Team LH! 🏁)
