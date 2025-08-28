@@ -327,6 +327,9 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
               indicatorColor: AppStyles.accent,
               indicatorWeight: 3,
               indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: TextStyle(
+                fontFamily: "F1"
+              ),
               tabs: [
                 Container(
                   alignment: Alignment.center,

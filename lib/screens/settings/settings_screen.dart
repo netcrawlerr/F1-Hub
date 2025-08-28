@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:f1_hub/core/base_layout.dart';
+import 'package:f1_hub/services/github_services.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -114,53 +115,75 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             sectionTitle("Version and Releases"),
 
-            ListTile(
-              title: const Text(
-                "Release Version",
-                style: TextStyle(fontSize: 14, fontFamily: "F1"),
-              ),
-              subtitle: Text("v1.0.0", style: AppStyles.smallText(context)),
-              trailing: const Icon(
-                Icons.info_outline,
-                size: 20,
-                color: Colors.grey,
-              ),
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder:
-                      (context) => AlertDialog(
-                        title: Row(
-                          children: [
-                            Image.asset(
-                              'assets/images/formula-splash.png',
-                              width: 30,
-                              height: 30,
-                              fit: BoxFit.contain,
+            FutureBuilder<String>(
+              future: GithubServices.fetchLatestVersion(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const ListTile(
+                    title: Text("Release Version"),
+                    subtitle: Text("Loading..."),
+                    trailing: CircularProgressIndicator(strokeWidth: 2),
+                  );
+                } else if (snapshot.hasError) {
+                  return ListTile(
+                    title: const Text("Release Version"),
+                    subtitle: Text("Error fetching version"),
+                    trailing: const Icon(Icons.error, color: Colors.red),
+                  );
+                } else {
+                  return ListTile(
+                    title: const Text(
+                      "Release Version",
+                      style: TextStyle(fontSize: 14, fontFamily: "F1"),
+                    ),
+                    subtitle: Text(
+                      snapshot.data ?? "Unknown",
+                      style: AppStyles.smallText(context),
+                    ),
+                    trailing: const Icon(
+                      Icons.info_outline,
+                      size: 20,
+                      color: Colors.grey,
+                    ),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (context) => AlertDialog(
+                              title: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/images/formula-splash.png',
+                                    width: 30,
+                                    height: 30,
+                                    fit: BoxFit.contain,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text(
+                                    'About F1 Hub',
+                                    style: TextStyle(fontFamily: "F1"),
+                                  ),
+                                ],
+                              ),
+                              content: const Text(
+                                "F1 Hub is your go-to app for F1 fans.\n\n"
+                                "Stay updated with race schedules, live countdowns, and notifications.\n"
+                                "Designed with sleek UI and smooth performance.\n"
+                                "Powered by Flutter and open source technology.\n\n"
+                                "Enjoy the racing season with Formula Hub!",
+                                style: TextStyle(fontFamily: "F1"),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Close'),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 10),
-                            const Text(
-                              'About F1 Hub',
-                              style: TextStyle(fontFamily: "F1"),
-                            ),
-                          ],
-                        ),
-                        content: const Text(
-                          "Formula Hub is your go-to app for F1 fans.\n\n"
-                          "Stay updated with race schedules, live countdowns, and notifications.\n"
-                          "Designed with sleek UI and smooth performance.\n"
-                          "Powered by Flutter and open source technology.\n\n"
-                          "Enjoy the racing season with Formula Hub!",
-                          style: TextStyle(fontFamily: "F1"),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(),
-                            child: const Text('Close'),
-                          ),
-                        ],
-                      ),
-                );
+                      );
+                    },
+                  );
+                }
               },
             ),
 
