@@ -100,6 +100,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 18,
+                      fontFamily: "F1",
                       fontWeight: FontWeight.w600,
                       color: Colors.grey[700],
                     ),
@@ -107,7 +108,11 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                   const SizedBox(height: 8),
                   Text(
                     "Check your connection and try refreshing!",
-                    style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontFamily: "F1",
+                      color: Colors.grey[500],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
@@ -119,7 +124,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       fetchAllRaces();
                     },
                     icon: const Icon(Icons.refresh),
-                    label: const Text("Retry"),
+                    label: const Text(
+                      "Retry",
+                      style: TextStyle(fontFamily: "F1"),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
                       foregroundColor: AppStyles.darkModeTextColor,

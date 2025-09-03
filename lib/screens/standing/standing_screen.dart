@@ -131,6 +131,7 @@ class _StandingScreenState extends State<StandingScreen> {
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 18,
+              fontFamily: "F1",
               fontWeight: FontWeight.w600,
               color: Colors.grey,
             ),
@@ -138,13 +139,17 @@ class _StandingScreenState extends State<StandingScreen> {
           const SizedBox(height: 8),
           const Text(
             "Check your connection and try refreshing!",
-            style: TextStyle(fontSize: 14, color: Colors.grey),
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: "F1",
+              color: Colors.grey,
+            ),
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
             onPressed: _loadStandings,
             icon: const Icon(Icons.refresh),
-            label: const Text("Retry"),
+            label: const Text("Retry", style: TextStyle(fontFamily: "F1")),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.redAccent,
               foregroundColor: AppStyles.darkModeTextColor,
