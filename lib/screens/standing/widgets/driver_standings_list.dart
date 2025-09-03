@@ -19,7 +19,7 @@ class DriverStandingsList extends StatelessWidget {
               const Divider(height: 1, indent: 16, endIndent: 16),
             ],
           );
-        }).toList(),
+        }),
       ],
     );
   }

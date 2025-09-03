@@ -24,7 +24,7 @@ class StandingTabs extends StatelessWidget {
 
     TextStyle? inactiveTextStyle = AppStyles.body(
       context,
-    )?.copyWith(color: AppStyles.mutedText);
+    ).copyWith(color: AppStyles.mutedText);
 
     BoxDecoration groupDecoration = AppStyles.card(context);
 

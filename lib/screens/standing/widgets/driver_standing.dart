@@ -43,7 +43,7 @@ class DriverStanding extends StatelessWidget {
                     driver.position.toString(),
                     style: AppStyles.body(
                       context,
-                    )?.copyWith(fontWeight: FontWeight.bold),
+                    ).copyWith(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.start,
                   ),
                 ),
@@ -57,14 +57,14 @@ class DriverStanding extends StatelessWidget {
                         driver.name,
                         style: AppStyles.body(
                           context,
-                        )?.copyWith(fontWeight: FontWeight.w500),
+                        ).copyWith(fontWeight: FontWeight.w500),
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
                         driver.team, // Display team name
                         style: AppStyles.smallText(
                           context,
-                        )?.copyWith(color: AppStyles.mutedText),
+                        ).copyWith(color: AppStyles.mutedText),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ],
@@ -119,7 +119,7 @@ class DriverStandingsHeader extends StatelessWidget {
             flex: 3,
             child: Text(
               "# Driver",
-              style: AppStyles.smallText(context)?.copyWith(
+              style: AppStyles.smallText(context).copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppStyles.mutedText,
               ),
@@ -134,7 +134,7 @@ class DriverStandingsHeader extends StatelessWidget {
                   width: 50,
                   child: Text(
                     "Points",
-                    style: AppStyles.smallText(context)?.copyWith(
+                    style: AppStyles.smallText(context).copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppStyles.mutedText,
                     ),
@@ -146,7 +146,7 @@ class DriverStandingsHeader extends StatelessWidget {
                   width: 40,
                   child: Text(
                     "Wins",
-                    style: AppStyles.smallText(context)?.copyWith(
+                    style: AppStyles.smallText(context).copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppStyles.mutedText,
                     ),

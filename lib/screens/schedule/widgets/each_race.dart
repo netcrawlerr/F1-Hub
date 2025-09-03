@@ -107,7 +107,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
             raceDate,
             style: AppStyles.caption(
               context,
-            )?.copyWith(color: AppStyles.mutedText),
+            ).copyWith(color:AppStyles.mutedText),
           ),
           const SizedBox(height: 5),
 
@@ -115,7 +115,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
             localTime24,
             style: AppStyles.caption(
               context,
-            )?.copyWith(color: AppStyles.mutedText),
+            ).copyWith(color:AppStyles.mutedText),
           ),
           const SizedBox(height: 10),
           Row(
@@ -131,7 +131,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                   displayedStatus,
                   style: AppStyles.smallText(
                     context,
-                  )?.copyWith(color: AppStyles.darkModeTextColor),
+                  ).copyWith(color: AppStyles.darkModeTextColor),
                 ),
               ),
               InkWell(
@@ -145,7 +145,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                         _isExpanded ? "Hide Details" : "View Details",
                         style: AppStyles.smallText(
                           context,
-                        )?.copyWith(color: AppStyles.error),
+                        ).copyWith(color: AppStyles.error),
                       ),
                       Icon(
                         _isExpanded
@@ -201,7 +201,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                                     circuitName,
                                     style: AppStyles.body(
                                       context,
-                                    )?.copyWith(fontWeight: FontWeight.bold),
+                                    ).copyWith(fontWeight: FontWeight.bold),
                                     overflow: TextOverflow.ellipsis,
                                     maxLines: 2,
                                   ),
@@ -209,7 +209,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                                     location,
                                     style: AppStyles.body(
                                       context,
-                                    )?.copyWith(color: AppStyles.mutedText),
+                                    ).copyWith(color: AppStyles.mutedText),
                                   ),
                                 ],
                               ),
@@ -219,7 +219,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                         const SizedBox(height: 15),
                         hasWinner
                             ? Divider(
-                              color: AppStyles.mutedText?.withOpacity(0.3),
+                              color: AppStyles.mutedText.withOpacity(0.3),
                             )
                             : Text(""),
                         const SizedBox(height: 10),
@@ -235,7 +235,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                                     "Race Results",
                                     style: AppStyles.caption(
                                       context,
-                                    )?.copyWith(fontWeight: FontWeight.bold),
+                                    ).copyWith(fontWeight: FontWeight.bold),
                                   ),
                                   const SizedBox(height: 10),
                                   _buildResultRow(
@@ -265,7 +265,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                                               "Fastest Lap",
                                               style: AppStyles.body(
                                                 context,
-                                              )?.copyWith(
+                                              ).copyWith(
                                                 fontWeight: FontWeight.bold,
                                               ),
                                             ),
@@ -450,7 +450,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
               "Race Results",
               style: AppStyles.caption(
                 context,
-              )?.copyWith(fontWeight: FontWeight.bold),
+              ).copyWith(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
             _buildResultRow(
@@ -474,7 +474,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                         "Fastest Lap",
                         style: AppStyles.body(
                           context,
-                        )?.copyWith(fontWeight: FontWeight.bold),
+                        ).copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 4),
                       Row(
@@ -518,14 +518,14 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                 category,
                 style: AppStyles.body(
                   context,
-                )?.copyWith(fontWeight: FontWeight.bold),
+                ).copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 2),
               Text(
                 value,
                 style: AppStyles.body(
                   context,
-                )?.copyWith(color: AppStyles.mutedText),
+                ).copyWith(color: AppStyles.mutedText),
               ),
             ],
           ),

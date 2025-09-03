@@ -41,7 +41,7 @@ class ConstructorStanding extends StatelessWidget {
                     constructor.position.toString(),
                     style: AppStyles.body(
                       context,
-                    )?.copyWith(fontWeight: FontWeight.bold),
+                    ).copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -51,7 +51,7 @@ class ConstructorStanding extends StatelessWidget {
                     constructor.name,
                     style: AppStyles.body(
                       context,
-                    )?.copyWith(fontWeight: FontWeight.w500),
+                    ).copyWith(fontWeight: FontWeight.w500),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
@@ -104,7 +104,7 @@ class ConstructorStandingsHeader extends StatelessWidget {
             flex: 3,
             child: Text(
               "# Constructor",
-              style: AppStyles.smallText(context)?.copyWith(
+              style: AppStyles.smallText(context).copyWith(
                 fontWeight: FontWeight.bold,
                 color: AppStyles.mutedText,
               ),
@@ -119,7 +119,7 @@ class ConstructorStandingsHeader extends StatelessWidget {
                   width: 50,
                   child: Text(
                     "Points",
-                    style: AppStyles.smallText(context)?.copyWith(
+                    style: AppStyles.smallText(context).copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppStyles.mutedText,
                     ),
@@ -131,7 +131,7 @@ class ConstructorStandingsHeader extends StatelessWidget {
                   width: 40,
                   child: Text(
                     "Wins",
-                    style: AppStyles.smallText(context)?.copyWith(
+                    style: AppStyles.smallText(context).copyWith(
                       fontWeight: FontWeight.bold,
                       color: AppStyles.mutedText,
                     ),
