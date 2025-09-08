@@ -1,3 +1,4 @@
+import 'package:f1_hub/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
@@ -36,11 +37,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (savedValue) {
       await NotificationServices().scheduleNotification(
+        id: 1,
         title: "Reminder",
         body: "Don't miss today's action 🏎️ 🔥",
+        year: DateTime.now().year,
+        month: DateTime.now().month,
+        day: DateTime.now().day,
         hour: 20,
         minute: 00,
       );
+      print("Scheduled notification");
     } else {
       await NotificationServices().cancelNotifications();
     }
@@ -87,15 +93,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
                   if (val) {
                     await NotificationServices().scheduleNotification(
+                      id: 1,
+                      year: DateTime.now().year,
+                      month: DateTime.now().month,
+                      day: DateTime.now().day,
                       title: "Reminder",
                       body: "Don't miss today's action 🏎️ 🔥",
                       hour: 20,
                       minute: 00,
                     );
+
+                    final api = ApiServices();
+
+                    final notificationService = NotificationServices();
+
+                    await api.scheduleAllRaceNotifications(notificationService);
+                    
                   } else {
                     await NotificationServices().cancelNotifications();
                   }
                 },
+
               ),
             ),
 

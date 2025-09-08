@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:f1_hub/services/notification_services.dart';
 import 'package:f1_hub/utils/next_race_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/base_layout.dart';
@@ -10,6 +11,7 @@ import 'package:f1_hub/screens/news/widgets/new_race_countdown_card.dart';
 import 'package:f1_hub/screens/news/widgets/news_card.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NewsScreen extends StatefulWidget {
   const NewsScreen({super.key});
@@ -48,6 +50,17 @@ class _NewsScreenState extends State<NewsScreen> {
   Future<void> fetchNextRaceCountdown() async {
     try {
       final api = ApiServices();
+      final notificationService = NotificationServices();
+
+      // check in prefs
+      final prefs = await SharedPreferences.getInstance();
+      final notificationsEnabled =
+          prefs.getBool('notifications_enabled') ?? true;
+
+      if (notificationsEnabled) {
+        await api.scheduleAllRaceNotifications(notificationService);
+      }
+
       final nextRace = await api.fetchNextRace();
       final race = nextRace['race'][0];
       raceName = race['raceName'];
@@ -143,6 +156,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18,
+                        fontFamily: "F1",
                         fontWeight: FontWeight.w600,
                         color: Colors.grey,
                       ),
@@ -150,7 +164,11 @@ class _NewsScreenState extends State<NewsScreen> {
                     const SizedBox(height: 8),
                     Text(
                       "Check your connection and try refreshing!",
-                      style: TextStyle(fontSize: 14, color: Colors.grey[500]),
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: "F1",
+                        color: Colors.grey[500],
+                      ),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
@@ -162,7 +180,10 @@ class _NewsScreenState extends State<NewsScreen> {
                         fetchNewsArticles();
                       },
                       icon: const Icon(Icons.refresh),
-                      label: const Text("Retry"),
+                      label: const Text(
+                        "Retry",
+                        style: TextStyle(fontFamily: "F1"),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.redAccent,
                         foregroundColor: AppStyles.darkModeTextColor,

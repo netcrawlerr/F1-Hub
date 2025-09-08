@@ -6,7 +6,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 class NotificationServices {
   final notiticationPlugin = FlutterLocalNotificationsPlugin();
 
-  bool _isInitialized = false;
+  final bool _isInitialized = false;
 
   bool get isInitialized => _isInitialized;
 
@@ -51,22 +51,23 @@ class NotificationServices {
   }
 
   Future<void> scheduleNotification({
-    int id = 1,
+    required int id,
     required String title,
     required String body,
+    required year,
+    required month,
+    required day,
     required int hour,
     required int minute,
   }) async {
     final now = tz.TZDateTime.now(tz.local);
 
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
+    var scheduledDate = tz.TZDateTime(tz.local, year, month, day, hour, minute);
+
+    if (scheduledDate.isBefore(now)) {
+      print("⚠️ Skipping past notification: $title at $scheduledDate");
+      return;
+    }
 
     await notiticationPlugin.zonedSchedule(
       id,
@@ -75,12 +76,12 @@ class NotificationServices {
       scheduledDate,
       notificationDetails(),
       androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-
-      matchDateTimeComponents: DateTimeComponents.time,
     );
   }
 
   Future<void> cancelNotifications() async {
     await notiticationPlugin.cancelAll();
+    print("#########");
+    print("CANCELLED ALL NOTIFICATIONS");
   }
 }

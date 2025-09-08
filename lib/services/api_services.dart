@@ -2,9 +2,102 @@ import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:f1_hub/screens/news/widgets/news_card.dart';
 import 'package:http/http.dart' as http;
+import 'package:timezone/timezone.dart' as tz;
+
+import 'notification_services.dart';
 
 class ApiServices {
   final String? _baseUrl = dotenv.env["BASE_URL"];
+
+  Future<void> scheduleAllRaceNotifications(
+    NotificationServices notificationService,
+  ) async {
+    final all = await fetchAllRaces();
+
+    final flattenedRaces =
+        all.map((race) {
+          final schedule = race['schedule'];
+
+          return {
+            'raceId': race['raceId'],
+            'raceName': race['raceName'],
+            'raceDate': schedule['race']['date'] as String?,
+            'raceTime': schedule['race']['time'] as String?,
+            'qualyDate': schedule['qualy']['date'] as String?,
+            'qualyTime': schedule['qualy']['time'] as String?,
+            'sprintQualyDate': schedule['sprintQualy']['date'] as String?,
+            'sprintQualyTime': schedule['sprintQualy']['time'] as String?,
+            'sprintRaceDate': schedule['sprintRace']['date'] as String?,
+            'sprintRaceTime': schedule['sprintRace']['time'] as String?,
+          };
+        }).toList();
+
+    int notificationId = 2;
+
+    for (var race in flattenedRaces) {
+      final sessions = {
+        'race': {'date': race['raceDate'], 'time': race['raceTime']},
+        'qualy': {'date': race['qualyDate'], 'time': race['qualyTime']},
+        'sprintQualy': {
+          'date': race['sprintQualyDate'],
+          'time': race['sprintQualyTime'],
+        },
+        'sprintRace': {
+          'date': race['sprintRaceDate'],
+          'time': race['sprintRaceTime'],
+        },
+      };
+
+      for (var session in sessions.entries) {
+        final date = session.value['date'] as String?;
+        final time = session.value['time'] as String?;
+
+        if (date == null || time == null) continue; 
+
+        try {
+          final dateParts = date.split('-');
+          final timeParts = time.split('Z')[0].split(':');
+
+          final year = int.parse(dateParts[0]);
+          final month = int.parse(dateParts[1]);
+          final day = int.parse(dateParts[2]);
+          final hour = int.parse(timeParts[0]);
+          final minute = int.parse(timeParts[1]);
+
+          // UTC >> DateTime
+          final utcDateTime = DateTime.utc(year, month, day, hour, minute);
+      
+          final localDateTime = tz.TZDateTime.from(utcDateTime, tz.local);
+
+          final now = tz.TZDateTime.now(tz.local);
+        
+          if (localDateTime.isBefore(now)) {
+            print(
+              '[SERVICE]: Skipping past notification: ${race['raceName']} - ${session.key} at $localDateTime',
+            );
+            continue;
+          }
+
+          await notificationService.scheduleNotification(
+            id: notificationId++,
+            title: "${race['raceName']} - ${session.key.toUpperCase()}",
+            body: "The ${session.key.toUpperCase()} session starts now!",
+            year: localDateTime.year,
+            month: localDateTime.month,
+            day: localDateTime.day,
+            hour: localDateTime.hour,
+            minute: localDateTime.minute,
+          );
+
+          print(
+            'Scheduled notification #$notificationId: ${race['raceName']} - ${session.key.toUpperCase()} at $localDateTime',
+          );
+        } catch (e) {
+          print('Failed to schedule ${race['raceName']} - ${session.key}: $e');
+        }
+      }
+    }
+  }
 
   Future<Map<String, dynamic>> fetchNextRace() async {
     try {
