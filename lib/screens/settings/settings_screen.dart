@@ -108,12 +108,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     final notificationService = NotificationServices();
 
                     await api.scheduleAllRaceNotifications(notificationService);
-                    
                   } else {
                     await NotificationServices().cancelNotifications();
                   }
                 },
-
               ),
             ),
 
@@ -188,7 +186,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 "Stay updated with race schedules, live countdowns, and notifications.\n"
                                 "Designed with sleek UI and smooth performance.\n"
                                 "Powered by Flutter and open source technology.\n\n"
-                                "Enjoy the racing season with Formula Hub!",
+                                "Enjoy the racing season with F1 Hub!",
                                 style: TextStyle(fontFamily: "F1"),
                               ),
                               actions: [
