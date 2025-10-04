@@ -49,7 +49,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
     const double leftBorderWidth = 4.0;
 
     final raceName = race['raceName'] ?? 'Unknown Grand Prix';
-    final raceDate = race['schedule']?['race']?['date'] ?? 'TBD';
+    final raceDate = race['schedule']?['race']?['date'] ?? 'N/A';
     final circuitName = race['circuit']?["circuitName"] ?? 'Unknown Circuit';
     final country = race['circuit']?['country'];
     final city = race['circuit']?['city'];
@@ -107,7 +107,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
             raceDate,
             style: AppStyles.caption(
               context,
-            ).copyWith(color:AppStyles.mutedText),
+            ).copyWith(color: AppStyles.mutedText),
           ),
           const SizedBox(height: 5),
 
@@ -115,7 +115,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
             localTime24,
             style: AppStyles.caption(
               context,
-            ).copyWith(color:AppStyles.mutedText),
+            ).copyWith(color: AppStyles.mutedText),
           ),
           const SizedBox(height: 10),
           Row(
@@ -327,9 +327,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
               indicatorColor: AppStyles.accent,
               indicatorWeight: 3,
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: TextStyle(
-                fontFamily: "F1"
-              ),
+              labelStyle: TextStyle(fontFamily: "F1"),
               tabs: [
                 Container(
                   alignment: Alignment.center,
@@ -369,11 +367,18 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
   Widget _buildPracticeTabContent(Map<String, dynamic> schedule) {
     List<Widget> practiceWidgets = [];
 
-    for (var sessionName in ['fp1', 'fp2', 'fp3']) {
+    for (var sessionName in [
+      'fp1',
+      'fp2',
+      'fp3',
+      'qualy',
+      'sprintQualy',
+      'sprintRace',
+    ]) {
       final session = schedule[sessionName];
       if (session != null) {
-        final date = session['date'] ?? "TBD";
-        final time = session['time'] ?? "TBD";
+        final date = session['date'] ?? "N/A";
+        final time = session['time'] ?? "N/A";
 
         final formatted12Time = RaceTimeFormatter.formatUtcToLocal12(
           date,
@@ -437,8 +442,8 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
     String fastestLap,
     String fastestLapDriver,
   ) {
-    String date = raceData?['date'] ?? "TBD";
-    String time = raceData?['time'] ?? "TBD";
+    String date = raceData?['date'] ?? "N/A";
+    String time = raceData?['time'] ?? "N/A";
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
