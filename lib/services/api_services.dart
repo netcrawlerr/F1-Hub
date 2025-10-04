@@ -21,6 +21,12 @@ class ApiServices {
           return {
             'raceId': race['raceId'],
             'raceName': race['raceName'],
+            'fp1Date': schedule['fp1']['date'] as String?,
+            'fp1Time': schedule['fp1']['time'] as String?,
+            'fp2Date': schedule['fp2']['date'] as String?,
+            'fp2Time': schedule['fp2']['time'] as String?,
+            'fp3Date': schedule['fp3']['date'] as String?,
+            'fp3Time': schedule['fp3']['time'] as String?,
             'raceDate': schedule['race']['date'] as String?,
             'raceTime': schedule['race']['time'] as String?,
             'qualyDate': schedule['qualy']['date'] as String?,
@@ -36,6 +42,9 @@ class ApiServices {
 
     for (var race in flattenedRaces) {
       final sessions = {
+        'fp1': {'date': race['fp1Date'], 'time': race['fp1Time']},
+        'fp2': {'date': race['fp2Date'], 'time': race['fp2Time']},
+        'fp3': {'date': race['fp3Date'], 'time': race['fp3Time']},
         'race': {'date': race['raceDate'], 'time': race['raceTime']},
         'qualy': {'date': race['qualyDate'], 'time': race['qualyTime']},
         'sprintQualy': {
@@ -52,7 +61,7 @@ class ApiServices {
         final date = session.value['date'] as String?;
         final time = session.value['time'] as String?;
 
-        if (date == null || time == null) continue; 
+        if (date == null || time == null) continue;
 
         try {
           final dateParts = date.split('-');
@@ -66,11 +75,11 @@ class ApiServices {
 
           // UTC >> DateTime
           final utcDateTime = DateTime.utc(year, month, day, hour, minute);
-      
+
           final localDateTime = tz.TZDateTime.from(utcDateTime, tz.local);
 
           final now = tz.TZDateTime.now(tz.local);
-        
+
           if (localDateTime.isBefore(now)) {
             print(
               '[SERVICE]: Skipping past notification: ${race['raceName']} - ${session.key} at $localDateTime',
