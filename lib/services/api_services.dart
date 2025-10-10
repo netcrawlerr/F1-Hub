@@ -1,7 +1,10 @@
 import 'dart:convert';
+import 'package:f1_hub/models/schedule_widget_model.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:f1_hub/screens/news/widgets/news_card.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import 'notification_services.dart';
@@ -81,9 +84,9 @@ class ApiServices {
           final now = tz.TZDateTime.now(tz.local);
 
           if (localDateTime.isBefore(now)) {
-            print(
-              '[SERVICE]: Skipping past notification: ${race['raceName']} - ${session.key} at $localDateTime',
-            );
+            // print(
+            //   '[SERVICE]: Skipping past notification: ${race['raceName']} - ${session.key} at $localDateTime',
+            // );
             continue;
           }
 
@@ -98,9 +101,9 @@ class ApiServices {
             minute: localDateTime.minute,
           );
 
-          print(
-            'Scheduled notification #$notificationId: ${race['raceName']} - ${session.key.toUpperCase()} at $localDateTime',
-          );
+          // print(
+          //   'Scheduled notification #$notificationId: ${race['raceName']} - ${session.key.toUpperCase()} at $localDateTime',
+          // );
         } catch (e) {
           print('Failed to schedule ${race['raceName']} - ${session.key}: $e');
         }
@@ -114,6 +117,7 @@ class ApiServices {
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
+        await saveScheduleWidgetData(jsonData);
         return jsonData;
       } else {
         throw Exception('Failed to fetch next race: ${response.statusCode}');
@@ -303,5 +307,78 @@ class ApiServices {
     } else {
       throw Exception('Failed to load news');
     }
+  }
+
+  Future<void> saveScheduleWidgetData(Map<String, dynamic> apiJson) async {
+    final round = apiJson['round']?.toString() ?? '';
+    final race = apiJson['race'][0];
+    final circuit = race['circuit'];
+    final schedule = race['schedule'];
+
+    final dateFormatter = DateFormat('MMM dd');
+    final timeFormatter = DateFormat('EEE hh:mm a');
+
+    DateTime? parseUtc(String? date, String? time) {
+      if (date == null || time == null) return null;
+      return DateTime.tryParse('${date}T$time');
+    }
+
+    // Parse all
+    final Map<String, String> sessionLabels = {
+      'fp1': 'Practice 1',
+      'fp2': 'Practice 2',
+      'fp3': 'Practice 3',
+      'sprintQualy': 'Sprint Qualy',
+      'sprintRace': 'Sprint Race',
+      'qualy': 'Qualifying',
+      'race': 'Race',
+    };
+
+    final sessions = <WidgetSession>[];
+
+    for (final entry in sessionLabels.entries) {
+      final session = schedule[entry.key];
+      final date = session?['date'];
+      final time = session?['time'];
+      final parsed = parseUtc(date, time);
+      if (parsed != null) {
+        sessions.add(
+          WidgetSession(
+            label: entry.value,
+            day: dateFormatter.format(parsed),
+            time: timeFormatter.format(parsed.toLocal()),
+          ),
+        );
+      }
+    }
+
+    // ssn day range display
+    if (sessions.isNotEmpty) {
+      sessions.sort(
+        (a, b) => DateFormat(
+          'MMM dd',
+        ).parse(a.day).compareTo(DateFormat('MMM dd').parse(b.day)),
+      );
+    }
+    final dateRange =
+        sessions.length > 1
+            ? '${sessions.first.day.toUpperCase()} – ${sessions.last.day.toUpperCase()}'
+            : sessions.first.day.toUpperCase();
+
+    final widgetData = ScheduleWidgetModel(
+      round: round,
+      raceName: race['raceName'],
+      circuitName: circuit['circuitName'],
+      country: circuit['country'],
+      dateRange: dateRange,
+      sessions: sessions,
+    );
+
+    print("#############################################");
+    print(widgetData);
+    print("#############################################");
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('race_widget_data', widgetData.toJsonString());
   }
 }
