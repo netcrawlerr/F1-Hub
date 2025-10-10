@@ -50,8 +50,17 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+    implementation("es.antonborri.home_widget:home_widget:0.2.1")
     implementation("androidx.glance:glance-appwidget:1.1.1")
+    implementation("androidx.glance:glance:1.1.1")
+    implementation("androidx.compose.runtime:runtime:1.6.8")
+    implementation("androidx.compose.ui:ui-unit:1.6.8")
+    implementation("androidx.compose.ui:ui-util:1.6.8")
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.glance:glance-appwidget-proto:1.1.1")
 }
+
+
 
 flutter {
     source = "../.."

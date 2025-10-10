@@ -71,6 +71,20 @@
                 android:resource="@xml/next_race_widget_configuration" />
         </receiver>
 
+        <!-- schedule Widget Receiver -->
+        <receiver
+            android:name=".ScheduleWidgetReceiver"
+            android:exported="true"
+            android:icon="@drawable/schedule"
+            android:label="F1 Hub - Schedule WIDGET">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/schedule_widget_configuration" />
+        </receiver>
+
         <!-- Flutter & Notification Receivers -->
         <meta-data
             android:name="flutterEmbedding"
