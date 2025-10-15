@@ -1,12 +1,15 @@
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:f1_hub/screens/news/news_screen.dart';
+import 'package:provider/provider.dart';
 import '../screens/schedule/schedule_screen.dart';
 import '../screens/settings/settings_screen.dart';
 import '../screens/standing/standing_screen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+  final String teamName;
+  const BottomNavBar({super.key, required this.teamName});
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
@@ -31,6 +34,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final team = context.watch<TeamProvider>().selectedTeam;
+    final flagColor = AppStyles.getFlagColor(team);
 
     return Scaffold(
       backgroundColor: isDark ? AppStyles.bgColorDark : AppStyles.bgColorLight,
@@ -43,16 +48,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: _onItemTapped,
-          selectedItemColor: Colors.indigoAccent,
+          selectedItemColor: flagColor,
           unselectedItemColor: isDark ? Colors.grey[500] : Colors.grey[600],
           backgroundColor:
               isDark ? AppStyles.bgColorDark : AppStyles.darkModeTextColor,
           type: BottomNavigationBarType.fixed,
-          selectedLabelStyle: const TextStyle(
-            fontFamily: 'F1',
-            fontWeight: FontWeight.w600,
-          ),
-          unselectedLabelStyle: const TextStyle(fontFamily: 'F1'),
+          selectedLabelStyle: AppStyles.bottomBarSelectedLabel,
+          unselectedLabelStyle: AppStyles.bottomBarUnselectedLabel,
           items: const [
             BottomNavigationBarItem(
               icon: Icon(Icons.article_outlined),

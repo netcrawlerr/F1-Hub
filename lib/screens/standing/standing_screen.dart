@@ -1,4 +1,5 @@
 import 'package:f1_hub/core/styles/app_styles.dart';
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:f1_hub/screens/standing/widgets/constructor_standings_list.dart';
 import 'package:f1_hub/screens/standing/widgets/driver_standings_list.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ import 'package:f1_hub/services/api_services.dart';
 import 'package:f1_hub/screens/standing/widgets/constructor_standing.dart';
 import 'package:f1_hub/screens/standing/widgets/driver_standing.dart';
 import 'package:f1_hub/screens/standing/widgets/standing_tabs.dart';
+import 'package:provider/provider.dart';
 
 class StandingScreen extends StatefulWidget {
   const StandingScreen({super.key});
@@ -82,6 +84,7 @@ class _StandingScreenState extends State<StandingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final team = context.watch<TeamProvider>().selectedTeam;
     return BaseLayout(
       onRefresh: _loadStandings,
       title: 'Standings',
@@ -99,6 +102,7 @@ class _StandingScreenState extends State<StandingScreen> {
                         _selectedTab = value;
                       });
                     },
+                    teamName: team,
                   ),
                   SingleChildScrollView(
                     child: Column(

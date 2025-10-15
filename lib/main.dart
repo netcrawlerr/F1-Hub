@@ -1,3 +1,4 @@
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:f1_hub/core/bottom_nav_bar.dart';
@@ -18,9 +19,13 @@ void main() async {
 
   final themeProvider = ThemeProvider();
   await themeProvider.loadTheme();
+
   runApp(
-    ChangeNotifierProvider<ThemeProvider>.value(
-      value: themeProvider,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<ThemeProvider>.value(value: themeProvider),
+        ChangeNotifierProvider(create: (_) => TeamProvider()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -32,6 +37,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
+    final team = context.watch<TeamProvider>().selectedTeam;
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -76,7 +82,7 @@ class MyApp extends StatelessWidget {
 
       // Routes
       routes: {
-        "/": (context) => BottomNavBar(),
+        "/": (context) => BottomNavBar(teamName: team),
         "/news": (context) => NewsScreen(),
         "/schedule": (context) => ScheduleScreen(),
         "/standing": (context) => StandingScreen(),

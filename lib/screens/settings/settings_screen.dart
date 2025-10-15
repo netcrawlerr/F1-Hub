@@ -1,3 +1,4 @@
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:f1_hub/services/api_services.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -20,11 +21,34 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   bool notificationsEnabled = true;
   bool willNotificationsBeEverTurnedOnAnyTimeSoon = false;
+  String? selectedTeam;
+
+  final List<String> f1Teams = [
+    'McLaren',
+    'Mercedes',
+    'Ferrari',
+    'RedBull',
+    'Williams',
+    'RBF1',
+    'AstonMartin',
+    'Sauber',
+    'Haas',
+    'Alpine',
+  ];
 
   @override
   void initState() {
     super.initState();
     _loadNotificationPreference();
+    _loadSelectedTeam();
+  }
+
+  Future<void> _loadSelectedTeam() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      selectedTeam = prefs.getString('selected_team') ?? '';
+    });
   }
 
   Future<void> _loadNotificationPreference() async {
@@ -56,6 +80,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeNotifier.isDark;
+    final teamProvider = Provider.of<TeamProvider>(context);
+
+    final selectedTeam = context.watch<TeamProvider>().selectedTeam;
 
     return BaseLayout(
       showThemeSwitcher: false,
@@ -64,6 +91,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            sectionTitle("Theme Preferences"),
+            ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+              title: const Text(
+                "Select Team Theme",
+                style: TextStyle(fontSize: 14, fontFamily: "F1"),
+              ),
+              subtitle: DropdownButton<String>(
+                value: selectedTeam,
+                isExpanded: true,
+                icon: const Icon(Icons.arrow_drop_down),
+                underline: const SizedBox(),
+                items:
+                    f1Teams.map((team) {
+                      return DropdownMenuItem<String>(
+                        value: team,
+                        child: Text(
+                          team,
+                          style: const TextStyle(fontFamily: "F1"),
+                        ),
+                      );
+                    }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    teamProvider.setTeam(value);
+                    // _saveSelectedTeam(value);
+                  }
+                },
+              ),
+            ),
+
             sectionTitle("Notifications"),
 
             ListTile(

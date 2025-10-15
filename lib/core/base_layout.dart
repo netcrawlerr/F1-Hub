@@ -1,3 +1,4 @@
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:f1_hub/providers/theme_provider.dart';
@@ -21,7 +22,8 @@ class BaseLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
-
+    final team = context.watch<TeamProvider>().selectedTeam;
+    final flagColor = AppStyles.getFlagColor(team);
     return RefreshIndicator(
       onRefresh: onRefresh ?? () async {},
       child: ListView(
@@ -35,7 +37,12 @@ class BaseLayout extends StatelessWidget {
                 children: [
                   // sample txt
                   Expanded(
-                    child: Text(title, style: AppStyles.headline1(context)),
+                    child: Text(
+                      title,
+                      style: AppStyles.headline1(
+                        context,
+                      ).copyWith(color: flagColor),
+                    ),
                   ),
                   SizedBox(width: 10),
 
