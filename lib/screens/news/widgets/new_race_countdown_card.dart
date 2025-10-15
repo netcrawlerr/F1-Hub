@@ -1,15 +1,19 @@
 import 'dart:async';
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:f1_hub/core/styles/app_styles.dart';  
+import 'package:f1_hub/core/styles/app_styles.dart';
+import 'package:provider/provider.dart';
 
 class NewRaceCountdownCard extends StatefulWidget {
   final String gpTitle;
   final Duration initialRemainingTime;
+  final String teamName;
 
   const NewRaceCountdownCard({
     super.key,
     required this.gpTitle,
     required this.initialRemainingTime,
+    required this.teamName,
   });
 
   @override
@@ -53,6 +57,8 @@ class _NewRaceCountdownCardState extends State<NewRaceCountdownCard> {
 
   @override
   Widget build(BuildContext context) {
+    final team = context.watch<TeamProvider>().selectedTeam;
+    final flagColor = AppStyles.getFlagColor(team);
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
       decoration: AppStyles.card(context),
@@ -65,7 +71,7 @@ class _NewRaceCountdownCardState extends State<NewRaceCountdownCard> {
               children: [
                 Row(
                   children: [
-                    Icon(Icons.flag, color: Colors.deepOrangeAccent),
+                    Icon(Icons.flag, color: flagColor),
                     SizedBox(width: 8),
                     Text("Next Race", style: AppStyles.caption(context)),
                   ],
@@ -77,7 +83,7 @@ class _NewRaceCountdownCardState extends State<NewRaceCountdownCard> {
                   child: Text(
                     "In ${formatDuration(remainingTime)}",
                     style: AppStyles.body(context).copyWith(
-                      color: AppStyles.orange,
+                      color: flagColor,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),

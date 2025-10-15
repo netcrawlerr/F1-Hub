@@ -143,6 +143,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                     NewRaceCountdownCard(
                       gpTitle: raceName!,
                       initialRemainingTime: remaining!,
+                      teamName: "",
                     ),
                     const SizedBox(height: 20),
                     Text(

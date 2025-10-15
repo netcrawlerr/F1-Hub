@@ -1,16 +1,20 @@
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
+import 'package:provider/provider.dart';
 
 enum StandingType { drivers, constructors }
 
 class StandingTabs extends StatelessWidget {
   final StandingType activeTab;
   final ValueChanged<StandingType> onTabSelected;
+  final String teamName;
 
   const StandingTabs({
     super.key,
     required this.activeTab,
     required this.onTabSelected,
+    required this.teamName,
   });
 
   @override
@@ -18,9 +22,14 @@ class StandingTabs extends StatelessWidget {
     bool isDriversActive = activeTab == StandingType.drivers;
     bool isConstructorsActive = activeTab == StandingType.constructors;
 
+    final team = context.watch<TeamProvider>().selectedTeam;
+    final flagColor = AppStyles.getFlagColor(team);
+
+    print("team, $team");
+    print("color, $flagColor");
     TextStyle? activeTextStyle = AppStyles.body(
       context,
-    ).copyWith(color: AppStyles.orange, fontWeight: FontWeight.bold);
+    ).copyWith(color: flagColor, fontWeight: FontWeight.bold);
 
     TextStyle? inactiveTextStyle = AppStyles.body(
       context,

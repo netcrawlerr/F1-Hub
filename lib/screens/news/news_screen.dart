@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:f1_hub/providers/team_provider.dart';
 import 'package:f1_hub/services/notification_services.dart';
 import 'package:f1_hub/utils/next_race_widget.dart';
 import 'package:flutter/material.dart';
@@ -123,6 +124,7 @@ class _NewsScreenState extends State<NewsScreen> {
   @override
   Widget build(BuildContext context) {
     Provider.of<ThemeProvider>(context);
+    final team = context.watch<TeamProvider>().selectedTeam;
 
     return BaseLayout(
       showThemeSwitcher: true,
@@ -138,6 +140,7 @@ class _NewsScreenState extends State<NewsScreen> {
               NewRaceCountdownCard(
                 gpTitle: raceName!,
                 initialRemainingTime: remaining!,
+                teamName: team,
               )
             else
               Center(

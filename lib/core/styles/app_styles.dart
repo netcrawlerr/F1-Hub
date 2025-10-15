@@ -21,6 +21,48 @@ class AppStyles {
   static const Color warning = Color(0xFFFFC107);
   static const Color error = Color(0xFFE44152);
 
+  // Bottom Navigation Bar Colors
+  static const Color unselectedItemColorDarkMode = Color(0xFF9E9E9E);
+  static const Color unselectedItemColorLightMode = Color(0xFF757575);
+  static const Color selectedItemColor = Colors.indigoAccent;
+  static const Color transparent = Colors.transparent;
+
+  static const TextStyle bottomBarSelectedLabel = TextStyle(
+    fontFamily: 'F1',
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle bottomBarUnselectedLabel = TextStyle(fontFamily: 'F1');
+
+  // team based color switching
+
+  static Color getFlagColor(String team) {
+    switch (team.toLowerCase()) {
+      case 'mclaren':
+        return const Color(0xFFFF8700);
+      case 'mercedes':
+        return const Color(0xFF00D2BE);
+      case 'ferrari':
+        return const Color(0xFFE41E26);
+      case 'redbull':
+        return const Color.fromARGB(255, 57, 118, 231);
+      case 'williams':
+        return const Color.fromARGB(255, 95, 128, 189);
+      case 'rbf1':
+        return const Color(0xFF6692FF);
+      case 'astonmartin':
+        return const Color(0xFF2D826D);
+      case 'sauber':
+        return const Color(0xFF52E252);
+      case 'haas':
+        return const Color(0xFFD0D1D3);
+      case 'alpine':
+        return const Color(0xFF0090FF);
+      default:
+        return const Color(0xFFFF8700);
+    }
+  }
+
   // Text Styles
   static TextStyle headline1(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
