@@ -1,3 +1,4 @@
+import 'package:f1_hub/core/spin_loader.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/core/base_layout.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
@@ -17,13 +18,29 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   Duration? remaining;
   String? raceName;
   bool isLoading = true;
+  bool isRacesLoading = false;
   List races = [];
+
+  String? selectedYear = DateTime.now().year.toString();
+
+  final List<String> years = [
+    '2025',
+    '2024',
+    '2023',
+    '2022',
+    '2021',
+    '2020',
+    '2019',
+    '2018',
+    '2017',
+    '2016',
+  ];
 
   @override
   void initState() {
     super.initState();
     fetchNextRaceCountdown();
-    fetchAllRaces();
+    fetchAllRaces(DateTime.now().year);
   }
 
   Future<void> saveRaceToPrefs(String gpTitle, DateTime raceDateTimeUtc) async {
@@ -62,28 +79,56 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
   }
 
-  Future<void> fetchAllRaces() async {
+  Future<void> fetchAllRaces(int year) async {
+    setState(() {
+      isRacesLoading = true;
+    });
     try {
       final api = ApiServices();
-      final all = await api.fetchAllRaces();
+      final all = await api.fetchAllRaces(year);
+
+      print("####################################");
+      print("ALL: $all");
+      print("####################################");
 
       setState(() {
         races = all;
       });
     } catch (e) {
       // do what ....
+    } finally {
+      setState(() {
+        isRacesLoading = false;
+      });
     }
+  }
+
+  // stylized loader
+  Widget get raceListLoader {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 40.0),
+      child: Center(child: SpinLoader()),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return BaseLayout(
-      onRefresh: () async => await fetchAllRaces(),
+      onRefresh: () async {
+        final yearInt = int.tryParse(selectedYear ?? '');
+        if (yearInt != null) {
+          setState(() {
+            isRacesLoading = true;
+          });
+          await fetchAllRaces(yearInt);
+        }
+      },
       showThemeSwitcher: true,
+      isContentLoading: isLoading,
       title: "Schedule",
       child:
           isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: SpinLoader())
               : (remaining == null || raceName == null)
               ? Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -121,7 +166,10 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                         isLoading = true;
                       });
                       fetchNextRaceCountdown();
-                      fetchAllRaces();
+                      final yearInt = int.tryParse(selectedYear ?? '');
+                      if (yearInt != null) {
+                        fetchAllRaces(yearInt);
+                      }
                     },
                     icon: const Icon(Icons.refresh),
                     label: const Text(
@@ -145,19 +193,77 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       initialRemainingTime: remaining!,
                       teamName: "",
                     ),
-                    const SizedBox(height: 20),
-                    Text(
-                      "Calendar Year - ${DateTime.now().year}",
-                      style: AppStyles.headline2(context),
+                    const SizedBox(height: 10),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 8.0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text(
+                            "Select Year",
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontFamily: "F1",
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 20),
+                          Expanded(
+                            child: DropdownButton<String>(
+                              value: selectedYear,
+                              isExpanded: true,
+                              icon: const Icon(Icons.arrow_drop_down),
+                              items:
+                                  years.map((year) {
+                                    return DropdownMenuItem<String>(
+                                      value: year,
+                                      child: Text(
+                                        year,
+                                        style: const TextStyle(
+                                          fontFamily: "F1",
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    selectedYear = value;
+                                    isRacesLoading = true;
+                                  });
+                                  final yearInt = int.tryParse(value);
+                                  if (yearInt != null) {
+                                    fetchAllRaces(yearInt);
+                                  }
+                                }
+                              },
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
 
                     const SizedBox(height: 10),
-                    ...races.map(
-                      (race) => Padding(
-                        padding: const EdgeInsets.only(bottom: 10),
-                        child: EachRace(race: race),
-                      ),
-                    ),
+
+                    isRacesLoading
+                        ? raceListLoader
+                        : Column(
+                          children:
+                              races
+                                  .map(
+                                    (race) => Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 10,
+                                      ),
+                                      child: EachRace(race: race),
+                                    ),
+                                  )
+                                  .toList(),
+                        ),
                   ],
                 ),
               ),

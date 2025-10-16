@@ -11,11 +11,13 @@ import 'notification_services.dart';
 
 class ApiServices {
   final String? _baseUrl = dotenv.env["BASE_URL"];
+  final String? _currentYearUrl = dotenv.env["CURRENT_YEAR_URL"];
 
   Future<void> scheduleAllRaceNotifications(
     NotificationServices notificationService,
   ) async {
-    final all = await fetchAllRaces();
+    final year = DateTime.now().year;
+    final all = await fetchAllRaces(year);
 
     final flattenedRaces =
         all.map((race) {
@@ -213,9 +215,9 @@ class ApiServices {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchAllRaces() async {
+  Future<List<Map<String, dynamic>>> fetchAllRaces(int year) async {
     try {
-      final response = await http.get(Uri.parse('$_baseUrl'));
+      final response = await http.get(Uri.parse('$_currentYearUrl/$year'));
 
       if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
@@ -260,8 +262,10 @@ class ApiServices {
               };
             }).toList();
 
+        print("TRANSFORMED RACES: $transformedRaces");
         return transformedRaces;
       } else {
+        print("EXCEPTION FIRED $response");
         throw Exception('Failed to fetch all races: ${response.statusCode}');
       }
     } catch (e) {
