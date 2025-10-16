@@ -37,14 +37,27 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final race = widget.race;
+
+    final dateStr = race['schedule']['race']['date'];
+    final timeStr = race['schedule']['race']['time'];
+    final dateTimeStr = '$dateStr${timeStr.startsWith('T') ? '' : 'T'}$timeStr';
+
+    final localRaceDateTime = DateTime.parse(dateTimeStr).toLocal();
+
+    final now = DateTime.now();
+
+    final bool isPast = !localRaceDateTime.isAfter(now);
+
     final bool hasWinner =
         race.containsKey('winner') &&
         race['winner'] != null &&
         (race['winner']['name'] ?? '').isNotEmpty;
 
-    final Color leftBorderColor = hasWinner ? Colors.green : Colors.cyan;
+    final bool isCompleted = isPast || hasWinner;
+
+    final Color leftBorderColor = isCompleted ? Colors.green : Colors.cyan;
     final String displayedStatus =
-        hasWinner ? "Completed" : (race['status'] ?? 'Scheduled');
+        isCompleted ? "Completed" : (race['status'] ?? 'Scheduled');
 
     const double leftBorderWidth = 4.0;
 
@@ -124,7 +137,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: hasWinner ? Colors.green : AppStyles.error,
+                  color: isCompleted ? Colors.green : AppStyles.error,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: Text(
@@ -217,7 +230,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                           ],
                         ),
                         const SizedBox(height: 15),
-                        hasWinner
+                        isCompleted
                             ? Divider(
                               color: AppStyles.mutedText.withOpacity(0.3),
                             )
@@ -225,7 +238,7 @@ class _EachRaceState extends State<EachRace> with TickerProviderStateMixin {
                         const SizedBox(height: 10),
 
                         // conditionally showing
-                        hasWinner
+                        isCompleted
                             ? Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Column(
