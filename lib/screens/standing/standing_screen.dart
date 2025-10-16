@@ -1,3 +1,4 @@
+import 'package:f1_hub/core/spin_loader.dart';
 import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:f1_hub/providers/team_provider.dart';
 import 'package:f1_hub/screens/standing/widgets/constructor_standings_list.dart';
@@ -88,9 +89,10 @@ class _StandingScreenState extends State<StandingScreen> {
     return BaseLayout(
       onRefresh: _loadStandings,
       title: 'Standings',
+      isContentLoading: isLoading,
       child:
           isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const Center(child: SpinLoader())
               : hasError
               ? _buildErrorMessage()
               : Column(
