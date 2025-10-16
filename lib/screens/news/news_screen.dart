@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:f1_hub/core/spin_loader.dart';
 import 'package:f1_hub/providers/team_provider.dart';
 import 'package:f1_hub/services/notification_services.dart';
 import 'package:f1_hub/utils/next_race_widget.dart';
@@ -38,6 +39,9 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<void> fetchNewsArticles() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       final api = ApiServices();
       final List<Article> fetchedArticles = await api.fetchNews();
@@ -45,10 +49,18 @@ class _NewsScreenState extends State<NewsScreen> {
         articles = fetchedArticles;
       });
       // ignore: empty_catches
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   Future<void> fetchNextRaceCountdown() async {
+    setState(() {
+      isLoading = true;
+    });
     try {
       final api = ApiServices();
       final notificationService = NotificationServices();
@@ -98,6 +110,8 @@ class _NewsScreenState extends State<NewsScreen> {
       setState(() {
         isLoading = false;
       });
+    } finally {
+      isLoading = false;
     }
   }
 
@@ -121,6 +135,13 @@ class _NewsScreenState extends State<NewsScreen> {
     super.dispose();
   }
 
+  Widget get loader {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 40.0),
+      child: Center(child: SpinLoader()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     Provider.of<ThemeProvider>(context);
@@ -130,12 +151,13 @@ class _NewsScreenState extends State<NewsScreen> {
       showThemeSwitcher: true,
       onRefresh: _refreshNews,
       title: 'News',
+      isContentLoading: isLoading,
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isLoading)
-              const Center(child: CircularProgressIndicator())
+              const Center(child: SpinLoader())
             else if (raceDate != null)
               NewRaceCountdownCard(
                 gpTitle: raceName!,
