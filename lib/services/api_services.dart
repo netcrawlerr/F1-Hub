@@ -129,10 +129,10 @@ class ApiServices {
     }
   }
 
-  Future<Map<String, dynamic>> fetchDriversStanding() async {
+  Future<Map<String, dynamic>> fetchDriversStanding(int year) async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/drivers-championship'),
+        Uri.parse('$_currentYearUrl/$year/drivers-championship'),
       );
 
       if (response.statusCode == 200) {
@@ -146,10 +146,10 @@ class ApiServices {
     }
   }
 
-  Future<Map<String, dynamic>> fetchConstructorsStanding() async {
+  Future<Map<String, dynamic>> fetchConstructorsStanding(int year) async {
     try {
       final response = await http.get(
-        Uri.parse('$_baseUrl/constructors-championship'),
+        Uri.parse('$_currentYearUrl/$year/constructors-championship'),
       );
 
       if (response.statusCode == 200) {
@@ -163,8 +163,8 @@ class ApiServices {
     }
   }
 
-  Future<List<Map<String, dynamic>>> getConstructorsWithStats() async {
-    final data = await fetchConstructorsStanding();
+  Future<List<Map<String, dynamic>>> getConstructorsWithStats(int year) async {
+    final data = await fetchConstructorsStanding(year);
     final List<dynamic> constructorsList = data['constructors_championship'];
 
     List<Map<String, dynamic>> result = [];
@@ -181,8 +181,8 @@ class ApiServices {
     return result;
   }
 
-  Future<List<Map<String, dynamic>>> getDriversWithTeam() async {
-    final data = await fetchDriversStanding();
+  Future<List<Map<String, dynamic>>> getDriversWithTeam(int year) async {
+    final data = await fetchDriversStanding(year);
     final List<dynamic> driversList = data['drivers_championship'];
 
     List<Map<String, dynamic>> result = [];

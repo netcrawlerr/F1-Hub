@@ -28,22 +28,39 @@ class _StandingScreenState extends State<StandingScreen> {
 
   bool isLoading = true;
   bool hasError = false;
+  bool isStandingLoading = false;
 
+  String? selectedYear = DateTime.now().year.toString();
+
+  final List<String> years = [
+    '2025',
+    '2024',
+    '2023',
+    '2022',
+    '2021',
+    '2020',
+    '2019',
+    '2018',
+    '2017',
+    '2016',
+  ];
   @override
   void initState() {
     super.initState();
-    _loadStandings();
+    _loadStandings(DateTime.now().year);
   }
 
-  Future<void> _loadStandings() async {
+  Future<void> _loadStandings(int year) async {
     setState(() {
       isLoading = true;
       hasError = false;
     });
 
+    final yearInt = int.tryParse(selectedYear ?? '');
+
     try {
-      final driversWithTeams = await api.getDriversWithTeam();
-      final constructorsWithStats = await api.getConstructorsWithStats();
+      final driversWithTeams = await api.getDriversWithTeam(yearInt!);
+      final constructorsWithStats = await api.getConstructorsWithStats(yearInt);
 
       setState(() {
         _driverStandings.clear();
@@ -87,7 +104,15 @@ class _StandingScreenState extends State<StandingScreen> {
   Widget build(BuildContext context) {
     final team = context.watch<TeamProvider>().selectedTeam;
     return BaseLayout(
-      onRefresh: _loadStandings,
+      onRefresh: () async {
+        final yearInt = int.tryParse(selectedYear ?? '');
+        if (yearInt != null) {
+          setState(() {
+            isStandingLoading = true;
+          });
+          await _loadStandings(yearInt);
+        }
+      },
       title: 'Standings',
       isContentLoading: isLoading,
       child:
@@ -106,11 +131,63 @@ class _StandingScreenState extends State<StandingScreen> {
                     },
                     teamName: team,
                   ),
+
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0,
+                      vertical: 8.0,
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const Text(
+                          "Select Year",
+                          style: TextStyle(
+                            fontSize: 14,
+                            fontFamily: "F1",
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Expanded(
+                          child: DropdownButton<String>(
+                            value: selectedYear,
+                            isExpanded: true,
+                            icon: const Icon(Icons.arrow_drop_down),
+                            items:
+                                years.map((year) {
+                                  return DropdownMenuItem<String>(
+                                    value: year,
+                                    child: Text(
+                                      year,
+                                      style: const TextStyle(fontFamily: "F1"),
+                                    ),
+                                  );
+                                }).toList(),
+                            onChanged: (value) {
+                              if (value != null) {
+                                setState(() {
+                                  selectedYear = value;
+                                  isStandingLoading = true;
+                                });
+                                final yearInt = int.tryParse(value);
+                                if (yearInt != null) {
+                                  _loadStandings(yearInt);
+                                }
+                              }
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                  // const SizedBox(height: 10),
                   SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 20),
+                        // const SizedBox(height: 5),
                         _buildContentForTab(_selectedTab),
                       ],
                     ),
@@ -153,7 +230,23 @@ class _StandingScreenState extends State<StandingScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            onPressed: _loadStandings,
+            onPressed: () async {
+              final yearInt = int.tryParse(selectedYear ?? '');
+              if (yearInt != null) {
+                setState(() {
+                  isStandingLoading = true;
+                });
+                // cuz 2021 is faulty idk why
+                if (yearInt == 2021) {
+                  setState(() {
+                    selectedYear = '2025';
+                  });
+                  await _loadStandings(2025);
+                } else {
+                  await _loadStandings(yearInt);
+                }
+              }
+            },
             icon: const Icon(Icons.refresh),
             label: const Text("Retry", style: TextStyle(fontFamily: "F1")),
             style: ElevatedButton.styleFrom(
