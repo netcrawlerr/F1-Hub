@@ -21,7 +21,7 @@ import com.netcrawler.f1_hub.models.ScheduleWidgetDataModel
 import com.netcrawler.f1_hub.models.getScheduleWidgetData
 
 
-class LazyCounterWidget : GlanceAppWidget() {
+class ScheduleAppWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
         context: Context,
         id: GlanceId

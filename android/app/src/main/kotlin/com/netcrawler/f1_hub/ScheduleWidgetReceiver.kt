@@ -2,8 +2,8 @@ package com.netcrawler.f1_hub
 
 import HomeWidgetGlanceWidgetReceiver
 
-class ScheduleWidgetReceiver: HomeWidgetGlanceWidgetReceiver<LazyCounterWidget> (){
-    override val glanceAppWidget: LazyCounterWidget
-        get() = LazyCounterWidget()
+class ScheduleWidgetReceiver: HomeWidgetGlanceWidgetReceiver<ScheduleAppWidget> (){
+    override val glanceAppWidget: ScheduleAppWidget
+        get() = ScheduleAppWidget()
 
 }
