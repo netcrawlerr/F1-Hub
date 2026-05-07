@@ -82,7 +82,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final isDarkMode = themeNotifier.isDark;
     final teamProvider = Provider.of<TeamProvider>(context);
 
-    final selectedTeam = context.watch<TeamProvider>().selectedTeam;
+    final currentTeam = context.watch<TeamProvider>().selectedTeam;
 
     return BaseLayout(
       showThemeSwitcher: false,
@@ -99,7 +99,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 style: TextStyle(fontSize: 14, fontFamily: "F1"),
               ),
               subtitle: DropdownButton<String>(
-                value: selectedTeam,
+                value: f1Teams.contains(currentTeam) ? currentTeam : null,
                 isExpanded: true,
                 icon: const Icon(Icons.arrow_drop_down),
                 underline: const SizedBox(),
