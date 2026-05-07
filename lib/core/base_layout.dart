@@ -93,8 +93,21 @@ class BaseLayout extends StatelessWidget {
       ],
     );
 
+    // base_layout.dart
+
     if (onRefresh != null && !isContentLoading) {
-      return RefreshIndicator(onRefresh: onRefresh!, child: content);
+      return RefreshIndicator(
+        onRefresh: onRefresh!,
+        elevation: 0,
+        color: Colors.transparent,
+        backgroundColor: Colors.transparent,
+        strokeWidth: 0,
+
+        notificationPredicate: (ScrollNotification notification) {
+          return notification.depth == 0 && notification.metrics.pixels <= 0;
+        },
+        child: content,
+      );
     } else {
       return content;
     }
