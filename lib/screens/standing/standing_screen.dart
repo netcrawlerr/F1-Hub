@@ -26,13 +26,11 @@ class _StandingScreenState extends State<StandingScreen> {
 
   StandingType _selectedTab = StandingType.drivers;
 
-  bool isLoading = true;
+  bool isInitialLoading = true;
+  bool isDataUpdating = false;
   bool hasError = false;
-  bool isStandingLoading = false;
 
   String? selectedYear = DateTime.now().year.toString();
-
-  // so that the year in the dropdown appears correctly
   final int currentYear = DateTime.now().year;
   final int startYear = 2020;
 
@@ -44,31 +42,31 @@ class _StandingScreenState extends State<StandingScreen> {
   @override
   void initState() {
     super.initState();
-    _loadStandings(DateTime.now().year);
+    _loadStandings(int.parse(selectedYear!));
   }
 
   Future<void> _loadStandings(int year) async {
+    if (!mounted) return;
     setState(() {
-      isLoading = true;
+      isDataUpdating = true;
       hasError = false;
     });
 
-    final yearInt = int.tryParse(selectedYear ?? '');
-
     try {
-      final driversWithTeams = await api.getDriversWithTeam(yearInt!);
-      final constructorsWithStats = await api.getConstructorsWithStats(yearInt);
+      final driversWithTeams = await api.getDriversWithTeam(year);
+      final constructorsWithStats = await api.getConstructorsWithStats(year);
 
+      if (!mounted) return;
       setState(() {
         _driverStandings.clear();
         _driverStandings.addAll(
           driversWithTeams.map(
-            (driverData) => Driver(
-              position: driverData['position'],
-              name: driverData['driver'],
-              team: driverData['team'],
-              points: driverData['points'],
-              wins: driverData['wins'],
+            (d) => Driver(
+              position: d['position'],
+              name: d['driver'],
+              team: d['team'],
+              points: d['points'],
+              wins: d['wins'],
             ),
           ),
         );
@@ -76,22 +74,23 @@ class _StandingScreenState extends State<StandingScreen> {
         _constructorStandings.clear();
         _constructorStandings.addAll(
           constructorsWithStats.map(
-            (constructorsData) => Constructor(
-              position: constructorsData['position'],
-              name: constructorsData['team'],
-              points: constructorsData['points'],
-              wins: constructorsData['wins'],
+            (c) => Constructor(
+              position: c['position'],
+              name: c['team'],
+              points: c['points'],
+              wins: c['wins'],
             ),
           ),
         );
 
-        isLoading = false;
-        hasError = false;
+        isInitialLoading = false;
+        isDataUpdating = false;
       });
     } catch (e) {
-      print("Error fetching standings: $e");
+      if (!mounted) return;
       setState(() {
-        isLoading = false;
+        isInitialLoading = false;
+        isDataUpdating = false;
         hasError = true;
       });
     }
@@ -100,174 +99,112 @@ class _StandingScreenState extends State<StandingScreen> {
   @override
   Widget build(BuildContext context) {
     final team = context.watch<TeamProvider>().selectedTeam;
+
     return BaseLayout(
-      onRefresh: () async {
-        final yearInt = int.tryParse(selectedYear ?? '');
-        if (yearInt != null) {
-          setState(() {
-            isStandingLoading = true;
-          });
-          await _loadStandings(yearInt);
-        }
-      },
       title: 'Standings',
-      isContentLoading: isLoading,
-      child:
-          isLoading
-              ? const Center(child: SpinLoader())
-              : hasError
-              ? _buildErrorMessage()
-              : Column(
-                children: [
-                  StandingTabs(
-                    activeTab: _selectedTab,
-                    onTabSelected: (StandingType value) {
-                      setState(() {
-                        _selectedTab = value;
-                      });
-                    },
-                    teamName: team,
-                  ),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0,
-                      vertical: 8.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Select Year",
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontFamily: "F1",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 20),
-                        Expanded(
-                          child: DropdownButton<String>(
-                            value: selectedYear,
-                            isExpanded: true,
-                            icon: const Icon(Icons.arrow_drop_down),
-                            items:
-                                years.map((year) {
-                                  return DropdownMenuItem<String>(
-                                    value: year,
-                                    child: Text(
-                                      year,
-                                      style: const TextStyle(fontFamily: "F1"),
-                                    ),
-                                  );
-                                }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setState(() {
-                                  selectedYear = value;
-                                  isStandingLoading = true;
-                                });
-                                final yearInt = int.tryParse(value);
-                                if (yearInt != null) {
-                                  _loadStandings(yearInt);
-                                }
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  // const SizedBox(height: 10),
-                  SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // const SizedBox(height: 5),
-                        _buildContentForTab(_selectedTab),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-    );
-  }
-
-  Widget _buildErrorMessage() {
-    return Center(
+      onRefresh: () async => _loadStandings(int.parse(selectedYear!)),
+      isContentLoading: false,
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 10),
-          const Icon(
-            Icons.warning_amber_rounded,
-            size: 64,
-            color: Colors.orange,
+          StandingTabs(
+            activeTab: _selectedTab,
+            onTabSelected: (val) => setState(() => _selectedTab = val),
+            teamName: team,
           ),
-          const SizedBox(height: 16),
-          const Text(
-            "Oops! Standings couldn't be loaded. 🏁",
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontSize: 18,
-              fontFamily: "F1",
-              fontWeight: FontWeight.w600,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            "Check your connection and try refreshing!",
-            style: TextStyle(
-              fontSize: 14,
-              fontFamily: "F1",
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 16),
-          ElevatedButton.icon(
-            onPressed: () async {
-              final yearInt = int.tryParse(selectedYear ?? '');
-              if (yearInt != null) {
-                setState(() {
-                  isStandingLoading = true;
-                });
-                // cuz 2021 is faulty idk why
-                if (yearInt == 2021) {
-                  setState(() {
-                    selectedYear = '2025';
-                  });
-                  await _loadStandings(2025);
-                } else {
-                  await _loadStandings(yearInt);
-                }
-              }
-            },
-            icon: const Icon(Icons.refresh),
-            label: const Text("Retry", style: TextStyle(fontFamily: "F1")),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: AppStyles.darkModeTextColor,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
+          _buildTableHeaderWithYearSelector(),
+          const Divider(height: 1),
+
+          // --- Data Area ---
+          if (isInitialLoading)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 100),
+              child: SpinLoader(),
+            )
+          else if (hasError)
+            _buildErrorMessage()
+          else ...[
+            // Progress line at the top when updating year/data
+            if (isDataUpdating)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: LinearProgressIndicator(
+                  color: AppStyles.getFlagColor(team),
+                  backgroundColor: Colors.transparent,
+                ),
               ),
-            ),
-          ),
+
+            // Content logic: show spinner if updating, otherwise show the list
+            isDataUpdating
+                ? const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 80),
+                  child: SpinLoader(),
+                )
+                : _buildContentForTab(_selectedTab),
+          ],
         ],
       ),
     );
   }
 
+  Widget _buildTableHeaderWithYearSelector() {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            const Icon(
+              Icons.calendar_today,
+              size: 14,
+              color: AppStyles.mutedText,
+            ),
+            const SizedBox(width: 8),
+            DropdownButton<String>(
+              value: selectedYear,
+              underline: const SizedBox(),
+              items:
+                  years
+                      .map((y) => DropdownMenuItem(value: y, child: Text(y)))
+                      .toList(),
+              onChanged: (val) {
+                if (val != null && !isDataUpdating) {
+                  setState(() => selectedYear = val);
+                  _loadStandings(int.parse(val));
+                }
+              },
+            ),
+          ],
+        ),
+        _selectedTab == StandingType.drivers
+            ? const DriverStandingsHeader()
+            : const ConstructorStandingsHeader(),
+      ],
+    );
+  }
+
   Widget _buildContentForTab(StandingType tab) {
-    switch (tab) {
-      case StandingType.drivers:
-        return DriverStandingsList(drivers: _driverStandings);
-      case StandingType.constructors:
-        return ConstructorStandingsList(constructors: _constructorStandings);
-      default:
-        return Container();
-    }
+    return tab == StandingType.drivers
+        ? DriverStandingsList(drivers: _driverStandings)
+        : ConstructorStandingsList(constructors: _constructorStandings);
+  }
+
+  Widget _buildErrorMessage() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 50),
+      child: Column(
+        children: [
+          const Icon(Icons.error_outline, size: 40, color: Colors.grey),
+          const SizedBox(height: 10),
+          const Text("Could not load standings"),
+          TextButton(
+            onPressed: () => _loadStandings(int.parse(selectedYear!)),
+            child: const Text(
+              "Retry",
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -8,19 +8,17 @@ class DriverStandingsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const DriverStandingsHeader(),
-        const Divider(height: 1, thickness: 1),
-        ...drivers.map((driver) {
-          return Column(
-            children: [
-              DriverStanding(driver: driver),
+    return ListView.separated(
+      padding: EdgeInsets.zero,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: drivers.length,
+      itemBuilder: (context, index) {
+        return DriverStanding(driver: drivers[index]);
+      },
+      separatorBuilder:
+          (context, index) =>
               const Divider(height: 1, indent: 16, endIndent: 16),
-            ],
-          );
-        }),
-      ],
     );
   }
 }

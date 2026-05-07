@@ -8,25 +8,17 @@ class ConstructorStandingsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-
-    return Column(
-      children: [
-        const ConstructorStandingsHeader(),
-        const Divider(height: 1, thickness: 1),
-        SizedBox(
-          height: screenHeight * 0.85,
-          child: ListView.separated(
-            itemCount: constructors.length,
-            itemBuilder: (context, index) {
-              return ConstructorStanding(constructor: constructors[index]);
-            },
-            separatorBuilder:
-                (context, index) =>
-                    const Divider(height: 1, indent: 16, endIndent: 16),
-          ),
-        ),
-      ],
+    return ListView.separated(
+      padding: EdgeInsets.zero,
+      shrinkWrap: true, // Crucial for use inside BaseLayout's ListView
+      physics: const NeverScrollableScrollPhysics(), // Disables inner scrolling
+      itemCount: constructors.length,
+      itemBuilder: (context, index) {
+        return ConstructorStanding(constructor: constructors[index]);
+      },
+      separatorBuilder:
+          (context, index) =>
+              const Divider(height: 1, indent: 16, endIndent: 16),
     );
   }
 }
