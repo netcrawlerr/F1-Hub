@@ -1,7 +1,7 @@
 import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:f1_hub/screens/news/widgets/news_card.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:f1_hub/screens/news/news_webview_screen.dart';
 
 class NewsDetailScreen extends StatefulWidget {
   final Article article;
@@ -16,15 +16,18 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
   int _currentImageIndex = 0;
   final PageController _pageController = PageController();
 
-  void _launchUrl(BuildContext context) async {
-    final Uri url = Uri.parse(widget.article.webUrl);
-    if (await canLaunchUrl(url)) {
-      await launchUrl(url, mode: LaunchMode.externalApplication);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Could not open the article link.")),
-      );
-    }
+  // open WebView
+  void _openInAppWebView(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder:
+            (context) => NewsWebViewScreen(
+              url: widget.article.webUrl,
+              title: widget.article.headline,
+            ),
+      ),
+    );
   }
 
   @override
@@ -135,26 +138,36 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
             const SizedBox(height: 20),
 
             GestureDetector(
-              onTap: () => _launchUrl(context),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(
-                    Icons.arrow_outward_sharp,
-                    size: 20,
-                    color: Colors.red[700],
-                  ),
-                  const SizedBox(width: 8),
-                  Text(
-                    'Open Web View',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: "F1",
+              onTap: () => _openInAppWebView(context),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 12,
+                  horizontal: 16,
+                ),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.red[700]!),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      Icons.chrome_reader_mode_outlined,
+                      size: 20,
                       color: Colors.red[700],
                     ),
-                  ),
-                ],
+                    const SizedBox(width: 8),
+                    Text(
+                      'Read Full Article',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: "F1",
+                        color: Colors.red[700],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
