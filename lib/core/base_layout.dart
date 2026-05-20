@@ -4,7 +4,7 @@ import 'package:f1_hub/core/styles/app_styles.dart';
 import 'package:f1_hub/providers/theme_provider.dart';
 import 'package:provider/provider.dart';
 
-class BaseLayout extends StatelessWidget {
+class BaseLayout extends StatefulWidget {
   final Widget child;
   final String title;
   final Future<void> Function()? onRefresh;
@@ -21,34 +21,44 @@ class BaseLayout extends StatelessWidget {
   });
 
   @override
+  State<BaseLayout> createState() => _BaseLayoutState();
+}
+
+class _BaseLayoutState extends State<BaseLayout> {
+  bool _hasTriggeredRefresh = false;
+
+  @override
   Widget build(BuildContext context) {
     final themeNotifier = Provider.of<ThemeProvider>(context);
     final isDarkMode = themeNotifier.themeMode == ThemeMode.dark;
     final team = context.watch<TeamProvider>().selectedTeam;
     final flagColor = AppStyles.getFlagColor(team);
 
-    final Widget content = ListView(
-      physics: const AlwaysScrollableScrollPhysics(),
+    // lmfaooo
+    const double intensePullThreshold = 120.0;
+
+    Widget content = ListView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: BouncingScrollPhysics(),
+      ),
       padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 15),
       children: [
         Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            // HEADER
             Row(
               children: [
-                // sample txt
                 Expanded(
                   child: Text(
-                    title,
+                    widget.title,
                     style: AppStyles.headline1(
                       context,
                     ).copyWith(color: flagColor),
                   ),
                 ),
                 const SizedBox(width: 10),
-
-                // switcher
-                showThemeSwitcher
+                widget.showThemeSwitcher
                     ? Tooltip(
                       message:
                           isDarkMode
@@ -80,36 +90,51 @@ class BaseLayout extends StatelessWidget {
                         ),
                       ),
                     )
-                    : const Text(""),
+                    : const SizedBox.shrink(),
               ],
             ),
-
             const SizedBox(height: 5),
-
-            // btm
-            Container(child: child),
+            widget.child,
           ],
         ),
       ],
     );
 
-    // base_layout.dart
+    if (widget.onRefresh != null) {
+      return NotificationListener<ScrollNotification>(
+        onNotification: (ScrollNotification notification) {
+          if (notification is ScrollUpdateNotification) {
+            final double metricsOffset = notification.metrics.pixels;
 
-    if (onRefresh != null && !isContentLoading) {
-      return RefreshIndicator(
-        onRefresh: onRefresh!,
-        elevation: 0,
-        color: Colors.transparent,
-        backgroundColor: Colors.transparent,
-        strokeWidth: 0,
+            if (metricsOffset < -intensePullThreshold &&
+                !_hasTriggeredRefresh &&
+                !widget.isContentLoading) {
+              setState(() {
+                _hasTriggeredRefresh = true;
+              });
 
-        notificationPredicate: (ScrollNotification notification) {
-          return notification.depth == 0 && notification.metrics.pixels <= 0;
+              // bg ref
+              widget.onRefresh!().then((_) {
+                if (mounted) {
+                  setState(() {
+                    _hasTriggeredRefresh = false;
+                  });
+                }
+              });
+            }
+          }
+
+          if (notification is ScrollEndNotification) {
+            if (!widget.isContentLoading) {
+              _hasTriggeredRefresh = false;
+            }
+          }
+          return false;
         },
         child: content,
       );
-    } else {
-      return content;
     }
+
+    return content;
   }
 }
