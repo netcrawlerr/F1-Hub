@@ -38,26 +38,30 @@ class AppStyles {
 
   static Color getFlagColor(String team) {
     switch (team.toLowerCase()) {
-      case 'mclaren':
+      case 'mclaren' || 'mclaren formula 1 team':
         return const Color(0xFFFF8700);
-      case 'mercedes':
+      case 'mercedes' || 'mercedes formula 1 team':
         return const Color(0xFF00D2BE);
-      case 'ferrari':
+      case 'ferrari' || 'scuderia ferrari':
         return const Color(0xFFE41E26);
-      case 'redbull':
+      case 'redbull' || 'red bull racing':
         return const Color.fromARGB(255, 57, 118, 231);
-      case 'williams':
+      case 'williams' || 'williams racing':
         return const Color.fromARGB(255, 95, 128, 189);
-      case 'rbf1':
+      case 'rbf1' || 'rb f1 team':
         return const Color(0xFF6692FF);
-      case 'astonmartin':
+      case 'astonmartin' || 'aston martin f1 team':
         return const Color(0xFF2D826D);
       case 'sauber':
         return const Color(0xFF52E252);
-      case 'haas':
+      case 'haas' || 'haas f1 team':
         return const Color(0xFFD0D1D3);
-      case 'alpine':
+      case 'alpine' || 'alpine f1 team':
         return const Color(0xFF0090FF);
+      case 'audi' || 'audi revolut f1 team':
+        return const Color.fromARGB(255, 40, 90, 48);
+      case 'cadillac' || 'cadillac formula 1 team':
+        return const Color.fromARGB(255, 153, 158, 154);
       default:
         return const Color(0xFFFF8700);
     }

@@ -28,20 +28,27 @@ class _NewsScreenState extends State<NewsScreen> {
   String? raceDate;
   String? raceTime;
   bool isLoading = true;
+  bool isBackgroundRefreshing = false;
   Timer? countdownTimer;
   List<Article> articles = [];
 
   @override
   void initState() {
     super.initState();
-    fetchNextRaceCountdown();
-    fetchNewsArticles();
+    _loadInitialData();
   }
 
-  Future<void> fetchNewsArticles() async {
+  Future<void> _loadInitialData() async {
     setState(() {
       isLoading = true;
     });
+    await Future.wait([fetchNewsArticles(), fetchNextRaceCountdown()]);
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  Future<void> fetchNewsArticles() async {
     try {
       final api = ApiServices();
       final List<Article> fetchedArticles = await api.fetchNews();
@@ -49,18 +56,10 @@ class _NewsScreenState extends State<NewsScreen> {
         articles = fetchedArticles;
       });
       // ignore: empty_catches
-    } catch (e) {
-    } finally {
-      setState(() {
-        isLoading = false;
-      });
-    }
+    } catch (e) {}
   }
 
   Future<void> fetchNextRaceCountdown() async {
-    setState(() {
-      isLoading = true;
-    });
     try {
       final api = ApiServices();
       final notificationService = NotificationServices();
@@ -102,16 +101,8 @@ class _NewsScreenState extends State<NewsScreen> {
         raceDate: raceDate!,
         raceTime: raceTime!,
       );
-
-      setState(() {
-        isLoading = false;
-      });
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-    } finally {
-      isLoading = false;
+      // Caught gracefully
     }
   }
 
@@ -146,6 +137,7 @@ class _NewsScreenState extends State<NewsScreen> {
   Widget build(BuildContext context) {
     Provider.of<ThemeProvider>(context);
     final team = context.watch<TeamProvider>().selectedTeam;
+    final activeFlagColor = AppStyles.getFlagColor(team);
 
     return BaseLayout(
       showThemeSwitcher: true,
@@ -156,78 +148,84 @@ class _NewsScreenState extends State<NewsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (isLoading)
-              const Center(child: SpinLoader())
-            else if (raceDate != null)
-              NewRaceCountdownCard(
-                gpTitle: raceName!,
-                initialRemainingTime: remaining!,
-                teamName: team,
-              )
-            else
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 10),
-                    const Icon(
-                      Icons.warning_amber_rounded,
-                      size: 64,
-                      color: Colors.orange,
-                    ),
-                    const SizedBox(height: 16),
-                    const Text(
-                      "Oops! Countdown couldn't be loaded. 🏁",
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: "F1",
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      "Check your connection and try refreshing!",
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontFamily: "F1",
-                        color: Colors.grey[500],
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        setState(() {
-                          isLoading = true;
-                        });
-                        fetchNextRaceCountdown();
-                        fetchNewsArticles();
-                      },
-                      icon: const Icon(Icons.refresh),
-                      label: const Text(
-                        "Retry",
-                        style: TextStyle(fontFamily: "F1"),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.redAccent,
-                        foregroundColor: AppStyles.darkModeTextColor,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 12,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+            if (isBackgroundRefreshing)
+              LinearProgressIndicator(
+                color: activeFlagColor,
+                backgroundColor: Colors.transparent,
+                minHeight: 2.5,
               ),
 
-            const SizedBox(height: 20),
+            // if (isLoading)
+            //   const Center(child: SpinLoader())
+            // else if (raceDate != null)
+            //   NewRaceCountdownCard(
+            //     gpTitle: raceName!,
+            //     initialRemainingTime: remaining!,
+            //     teamName: team,
+            //   )
+            // else
+            //   Center(
+            //     child: Column(
+            //       mainAxisAlignment: MainAxisAlignment.center,
+            //       children: [
+            //         const SizedBox(height: 10),
+            //         const Icon(
+            //           Icons.warning_amber_rounded,
+            //           size: 64,
+            //           color: Colors.orange,
+            //         ),
+            //         const SizedBox(height: 16),
+            //         const Text(
+            //           "Oops! Countdown couldn't be loaded. 🏁",
+            //           textAlign: TextAlign.center,
+            //           style: TextStyle(
+            //             fontSize: 18,
+            //             fontFamily: "F1",
+            //             fontWeight: FontWeight.w600,
+            //             color: Colors.grey,
+            //           ),
+            //         ),
+            //         const SizedBox(height: 8),
+            //         Text(
+            //           "Check your connection and try refreshing!",
+            //           style: TextStyle(
+            //             fontSize: 14,
+            //             fontFamily: "F1",
+            //             color: Colors.grey[500],
+            //           ),
+            //         ),
+            //         const SizedBox(height: 16),
+            //         ElevatedButton.icon(
+            //           onPressed: () {
+            //             _loadInitialData();
+            //           },
+            //           icon: const Icon(Icons.refresh),
+            //           label: const Text(
+            //             "Retry",
+            //             style: TextStyle(fontFamily: "F1"),
+            //           ),
+            //           style: ElevatedButton.styleFrom(
+            //             backgroundColor: Colors.redAccent,
+            //             foregroundColor: AppStyles.darkModeTextColor,
+            //             padding: const EdgeInsets.symmetric(
+            //               horizontal: 20,
+            //               vertical: 12,
+            //             ),
+            //             shape: RoundedRectangleBorder(
+            //               borderRadius: BorderRadius.circular(30),
+            //             ),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+
+            // const SizedBox(height: 20),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+                vertical: 8.0,
+              ),
               child: Text(
                 "Featured Stories",
                 style: AppStyles.headline2(context),
@@ -256,6 +254,14 @@ class _NewsScreenState extends State<NewsScreen> {
   }
 
   Future<void> _refreshNews() async {
+    setState(() {
+      isBackgroundRefreshing = true;
+    });
+
     await Future.wait([fetchNewsArticles(), fetchNextRaceCountdown()]);
+
+    setState(() {
+      isBackgroundRefreshing = false;
+    });
   }
 }
