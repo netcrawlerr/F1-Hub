@@ -99,6 +99,7 @@ class _StandingScreenState extends State<StandingScreen> {
   @override
   Widget build(BuildContext context) {
     final team = context.watch<TeamProvider>().selectedTeam;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BaseLayout(
       title: 'Standings',
@@ -113,9 +114,8 @@ class _StandingScreenState extends State<StandingScreen> {
             teamName: team,
           ),
           _buildTableHeaderWithYearSelector(),
-          const Divider(height: 1),
+          Divider(height: 1, color: isDark ? Colors.white10 : Colors.black12),
 
-          // --- Data Area ---
           if (isInitialLoading)
             const Padding(
               padding: EdgeInsets.symmetric(vertical: 100),
@@ -124,17 +124,16 @@ class _StandingScreenState extends State<StandingScreen> {
           else if (hasError)
             _buildErrorMessage()
           else ...[
-            // Progress line at the top when updating year/data
             if (isDataUpdating)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
                 child: LinearProgressIndicator(
                   color: AppStyles.getFlagColor(team),
                   backgroundColor: Colors.transparent,
+                  minHeight: 2,
                 ),
               ),
 
-            // Content logic: show spinner if updating, otherwise show the list
             isDataUpdating
                 ? const Padding(
                   padding: EdgeInsets.symmetric(vertical: 80),
@@ -148,37 +147,77 @@ class _StandingScreenState extends State<StandingScreen> {
   }
 
   Widget _buildTableHeaderWithYearSelector() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            const Icon(
-              Icons.calendar_today,
-              size: 14,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final selectorBorderColor =
+        isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.06);
+    final contentTextColor =
+        isDark ? Colors.white : AppStyles.lightModeTextColor;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            _selectedTab == StandingType.drivers
+                ? "DRIVER STANDINGS"
+                : "CONSTRUCTOR STANDINGS",
+            style: AppStyles.smallText(context).copyWith(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
               color: AppStyles.mutedText,
             ),
-            const SizedBox(width: 8),
-            DropdownButton<String>(
-              value: selectedYear,
-              underline: const SizedBox(),
-              items:
-                  years
-                      .map((y) => DropdownMenuItem(value: y, child: Text(y)))
-                      .toList(),
-              onChanged: (val) {
-                if (val != null && !isDataUpdating) {
-                  setState(() => selectedYear = val);
-                  _loadStandings(int.parse(val));
-                }
-              },
+          ),
+          Container(
+            height: 30,
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+            decoration: BoxDecoration(
+              color: Theme.of(
+                context,
+              ).cardColor.withOpacity(isDark ? 0.3 : 0.6),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(color: selectorBorderColor),
             ),
-          ],
-        ),
-        _selectedTab == StandingType.drivers
-            ? const DriverStandingsHeader()
-            : const ConstructorStandingsHeader(),
-      ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.calendar_today,
+                  size: 10,
+                  color: AppStyles.mutedText,
+                ),
+                const SizedBox(width: 6),
+                DropdownButton<String>(
+                  value: selectedYear,
+                  underline: const SizedBox(),
+
+                  dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                  style: AppStyles.body(context).copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                    color: contentTextColor,
+                  ),
+                  icon: const Icon(Icons.arrow_drop_down, size: 14),
+                  items:
+                      years
+                          .map(
+                            (y) => DropdownMenuItem(value: y, child: Text(y)),
+                          )
+                          .toList(),
+                  onChanged: (val) {
+                    if (val != null && !isDataUpdating) {
+                      setState(() => selectedYear = val);
+                      _loadStandings(int.parse(val));
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 

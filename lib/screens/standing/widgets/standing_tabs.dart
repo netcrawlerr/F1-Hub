@@ -19,68 +19,72 @@ class StandingTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool isDriversActive = activeTab == StandingType.drivers;
-    bool isConstructorsActive = activeTab == StandingType.constructors;
-
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final team = context.watch<TeamProvider>().selectedTeam;
     final flagColor = AppStyles.getFlagColor(team);
-
-    print("team, $team");
-    print("color, $flagColor");
-    TextStyle? activeTextStyle = AppStyles.body(
-      context,
-    ).copyWith(color: flagColor, fontWeight: FontWeight.bold);
-
-    TextStyle? inactiveTextStyle = AppStyles.body(
-      context,
-    ).copyWith(color: AppStyles.mutedText);
-
-    BoxDecoration groupDecoration = AppStyles.card(context);
+    final tabBorderColor =
+        isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.black.withOpacity(0.06);
 
     return Container(
-      decoration: groupDecoration,
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor.withOpacity(isDark ? 0.4 : 0.7),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: tabBorderColor),
+      ),
       child: Row(
         children: [
-          // Drivers Tab
-          Expanded(
-            child: GestureDetector(
-              onTap: () => onTabSelected(StandingType.drivers),
-              child: Container(
-                // No margin here
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 10,
-                ),
-
-                alignment: Alignment.center,
-                child: Text(
-                  "Drivers",
-                  style: isDriversActive ? activeTextStyle : inactiveTextStyle,
-                ),
-              ),
-            ),
-          ),
-
-          Expanded(
-            child: GestureDetector(
-              onTap: () => onTabSelected(StandingType.constructors),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 12,
-                  horizontal: 10,
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  "Constructors",
-                  style:
-                      isConstructorsActive
-                          ? activeTextStyle
-                          : inactiveTextStyle,
-                ),
-              ),
-            ),
+          _buildTabItem(context, "Drivers", StandingType.drivers, flagColor),
+          _buildTabItem(
+            context,
+            "Constructors",
+            StandingType.constructors,
+            flagColor,
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildTabItem(
+    BuildContext context,
+    String title,
+    StandingType type,
+    Color activeColor,
+  ) {
+    final bool isActive = activeTab == type;
+
+    return Expanded(
+      child: GestureDetector(
+        onTap: () => onTabSelected(type),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          padding: const EdgeInsets.symmetric(vertical: 11),
+          decoration: BoxDecoration(
+            color:
+                isActive ? activeColor.withOpacity(0.15) : Colors.transparent,
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(
+              color:
+                  isActive ? activeColor.withOpacity(0.3) : Colors.transparent,
+              width: 1,
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            title,
+            style: AppStyles.body(context).copyWith(
+              fontSize: 12,
+              color: isActive ? activeColor : AppStyles.mutedText,
+              fontWeight: isActive ? FontWeight.bold : FontWeight.w500,
+              letterSpacing: 0.3,
+            ),
+          ),
+        ),
       ),
     );
   }
