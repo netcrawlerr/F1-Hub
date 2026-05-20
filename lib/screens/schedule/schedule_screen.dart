@@ -6,6 +6,8 @@ import 'package:f1_hub/services/api_services.dart';
 import 'package:f1_hub/screens/news/widgets/new_race_countdown_card.dart';
 import 'package:f1_hub/screens/schedule/widgets/each_race.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import 'package:f1_hub/providers/team_provider.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});
@@ -20,12 +22,12 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
   bool isLoading = true;
   bool isRacesLoading = false;
   List races = [];
+  List filteredRaces = [];
 
   String? selectedYear = DateTime.now().year.toString();
-
-  // so that the year in the dropdown appears correctly
   final int currentYear = DateTime.now().year;
   final int startYear = 2020;
+  final TextEditingController _searchController = TextEditingController();
 
   late final List<String> years = List.generate(
     (currentYear - startYear) + 1,
@@ -37,6 +39,29 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     super.initState();
     fetchNextRaceCountdown();
     fetchAllRaces(DateTime.now().year);
+    _searchController.addListener(_filterRaces);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _filterRaces() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      if (query.isEmpty) {
+        filteredRaces = races;
+      } else {
+        filteredRaces =
+            races.where((race) {
+              final gpName = (race['raceName'] ?? '').toLowerCase();
+              final country = (race['circuit']?['country'] ?? '').toLowerCase();
+              return gpName.contains(query) || country.contains(query);
+            }).toList();
+      }
+    });
   }
 
   Future<void> saveRaceToPrefs(String gpTitle, DateTime raceDateTimeUtc) async {
@@ -50,10 +75,15 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       final api = ApiServices();
       final nextRace = await api.fetchNextRace();
       final race = nextRace['race'][0];
-      raceName = race['raceName'];
 
-      final dateStr = race['schedule']['race']['date'];
-      final timeStr = race['schedule']['race']['time'];
+      final countryName = race['circuit']?['country'] ?? 'Unknown';
+      raceName = "$countryName Grand Prix";
+
+      final scheduleData = race['schedule'] ?? race;
+      final mainRace = scheduleData['race'] ?? scheduleData;
+
+      final dateStr = mainRace['date'];
+      final timeStr = mainRace['time'];
       final isoDateTimeString =
           "$dateStr${timeStr.startsWith('T') ? '' : 'T'}$timeStr";
 
@@ -64,60 +94,37 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       remaining = diff.isNegative ? Duration.zero : diff;
 
       await saveRaceToPrefs(raceName!, raceDateTime);
-
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
+      setState(() => isLoading = false);
     }
   }
 
   Future<void> fetchAllRaces(int year) async {
-    setState(() {
-      isRacesLoading = true;
-    });
+    setState(() => isRacesLoading = true);
     try {
       final api = ApiServices();
       final all = await api.fetchAllRaces(year);
-
-      print("####################################");
-      print("ALL: $all");
-      print("####################################");
-
       setState(() {
         races = all;
+        _filterRaces();
       });
     } catch (e) {
-      // do what ....
+      // Handled silently
     } finally {
-      setState(() {
-        isRacesLoading = false;
-      });
+      setState(() => isRacesLoading = false);
     }
-  }
-
-  // stylized loader
-  Widget get raceListLoader {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 40.0),
-      child: Center(child: SpinLoader()),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final dividerColor = isDark ? Colors.white10 : Colors.black12;
+
     return BaseLayout(
       onRefresh: () async {
         final yearInt = int.tryParse(selectedYear ?? '');
-        if (yearInt != null) {
-          setState(() {
-            isRacesLoading = true;
-          });
-          await fetchAllRaces(yearInt);
-        }
+        if (yearInt != null) await fetchAllRaces(yearInt);
       },
       showThemeSwitcher: true,
       isContentLoading: isLoading,
@@ -126,143 +133,198 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
           isLoading
               ? const Center(child: SpinLoader())
               : (remaining == null || raceName == null)
-              ? Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(height: 10),
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    size: 64,
-                    color: Colors.orange,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    "Oops! Schedule couldn't be loaded. 🏁",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontFamily: "F1",
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    "Check your connection and try refreshing!",
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontFamily: "F1",
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: () {
-                      setState(() {
-                        isLoading = true;
-                      });
-                      fetchNextRaceCountdown();
-                      final yearInt = int.tryParse(selectedYear ?? '');
-                      if (yearInt != null) {
-                        fetchAllRaces(yearInt);
-                      }
-                    },
-                    icon: const Icon(Icons.refresh),
-                    label: const Text(
-                      "Retry",
-                      style: TextStyle(fontFamily: "F1"),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                      foregroundColor: AppStyles.darkModeTextColor,
-                    ),
-                  ),
-                ],
-              )
+              ? _buildErrorPlaceholder()
               : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 0),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     NewRaceCountdownCard(
-                      gpTitle: raceName!,
+                      gpTitle:
+                          (raceName ?? '').replaceFirst('Formula 1', '').trim(),
                       initialRemainingTime: remaining!,
                       teamName: "",
                     ),
-                    const SizedBox(height: 10),
+                    _buildControlFilterHeader(),
+                    Divider(height: 1, thickness: 0.5, color: dividerColor),
+                    const SizedBox(height: 6),
 
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16.0,
-                        vertical: 8.0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text(
-                            "Select Year",
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontFamily: "F1",
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            child: DropdownButton<String>(
-                              value: selectedYear,
-                              isExpanded: true,
-                              icon: const Icon(Icons.arrow_drop_down),
-                              items:
-                                  years.map((year) {
-                                    return DropdownMenuItem<String>(
-                                      value: year,
-                                      child: Text(
-                                        year,
-                                        style: const TextStyle(
-                                          fontFamily: "F1",
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    selectedYear = value;
-                                    isRacesLoading = true;
-                                  });
-                                  final yearInt = int.tryParse(value);
-                                  if (yearInt != null) {
-                                    fetchAllRaces(yearInt);
-                                  }
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 10),
-
+                    // conditional rendering
                     isRacesLoading
-                        ? raceListLoader
-                        : Column(
-                          children:
-                              races
-                                  .map(
-                                    (race) => Padding(
-                                      padding: const EdgeInsets.only(
-                                        bottom: 10,
-                                      ),
-                                      child: EachRace(race: race),
-                                    ),
-                                  )
-                                  .toList(),
+                        ? const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 80),
+                          child: SpinLoader(),
+                        )
+                        : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: filteredRaces.length,
+                          itemBuilder:
+                              (context, index) =>
+                                  EachRace(race: filteredRaces[index]),
                         ),
                   ],
                 ),
               ),
+    );
+  }
+
+  Widget _buildControlFilterHeader() {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final contentTextColor =
+        isDark ? AppStyles.darkModeTextColor : AppStyles.lightModeTextColor;
+    final borderOutlineColor =
+        isDark
+            ? Colors.white.withOpacity(0.04)
+            : Colors.black.withOpacity(0.08);
+
+    // Dynamic Team Flag color hookup to match BaseLayout theme context
+    final team = context.watch<TeamProvider>().selectedTeam;
+    final activeFlagColor = AppStyles.getFlagColor(team);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              // search
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(
+                      context,
+                    ).cardColor.withOpacity(isDark ? 0.2 : 0.6),
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: borderOutlineColor),
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    textAlignVertical: TextAlignVertical.center,
+                    style: TextStyle(fontSize: 11, color: contentTextColor),
+                    cursorColor: AppStyles.primary,
+                    cursorHeight: 13,
+                    decoration: InputDecoration(
+                      hintText: "Search Grand Prix...",
+                      hintStyle: TextStyle(
+                        fontSize: 10,
+                        color: AppStyles.mutedText.withOpacity(0.6),
+                      ),
+                      prefixIcon: const Icon(
+                        Icons.search,
+                        size: 12,
+                        color: AppStyles.mutedText,
+                      ),
+                      prefixIconConstraints: const BoxConstraints(
+                        minWidth: 30,
+                        minHeight: 28,
+                      ),
+                      border: InputBorder.none,
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 8),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+
+              // year selector
+              Container(
+                height: 30,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).cardColor.withOpacity(isDark ? 0.3 : 0.6),
+                  borderRadius: BorderRadius.circular(6),
+                  border: Border.all(color: borderOutlineColor),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.calendar_today,
+                      size: 10,
+                      color: AppStyles.mutedText,
+                    ),
+                    const SizedBox(width: 6),
+                    DropdownButton<String>(
+                      value: selectedYear,
+                      underline: const SizedBox(),
+                      dropdownColor: Theme.of(context).scaffoldBackgroundColor,
+                      style: AppStyles.body(
+                        context,
+                      ).copyWith(fontWeight: FontWeight.bold, fontSize: 11),
+                      icon: const Icon(
+                        Icons.arrow_drop_down,
+                        size: 14,
+                        color: AppStyles.mutedText,
+                      ),
+                      items:
+                          years
+                              .map(
+                                (y) =>
+                                    DropdownMenuItem(value: y, child: Text(y)),
+                              )
+                              .toList(),
+                      onChanged: (val) {
+                        if (val != null && !isRacesLoading) {
+                          setState(() {
+                            selectedYear = val;
+                            isRacesLoading = true;
+                          });
+                          final yearInt = int.tryParse(val);
+                          if (yearInt != null) fetchAllRaces(yearInt);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          if (isRacesLoading)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: LinearProgressIndicator(
+                color: activeFlagColor,
+                backgroundColor: Colors.transparent,
+                minHeight: 2,
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildErrorPlaceholder() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 100),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.alt_route_outlined,
+              size: 40,
+              color: AppStyles.mutedText,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "System Sync Error",
+              style: AppStyles.caption(
+                context,
+              ).copyWith(fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              onPressed: () => fetchNextRaceCountdown(),
+              child: const Text(
+                "Re-Sync",
+                style: TextStyle(fontSize: 11, color: AppStyles.primary),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

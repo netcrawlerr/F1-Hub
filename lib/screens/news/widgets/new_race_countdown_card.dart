@@ -48,52 +48,179 @@ class _NewRaceCountdownCardState extends State<NewRaceCountdownCard> {
     super.dispose();
   }
 
-  String formatDuration(Duration d) {
-    final hours = d.inHours.toString();
-    final minutes = (d.inMinutes % 60).toString().padLeft(2, '0');
-    final seconds = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return '${hours}H ${minutes}M ${seconds}s';
-  }
-
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     final team = context.watch<TeamProvider>().selectedTeam;
-    final flagColor = AppStyles.getFlagColor(team);
+    final flagColor = AppStyles.getFlagColor(
+      team.isNotEmpty ? team : widget.teamName,
+    );
+
+    final adaptiveTextColor =
+        isDark ? AppStyles.darkModeTextColor : AppStyles.lightModeTextColor;
+    final contentBorderColor = adaptiveTextColor.withOpacity(0.08);
+
+    final days = remainingTime.inDays;
+    final hours = remainingTime.inHours % 24;
+    final minutes = remainingTime.inMinutes % 60;
+    final seconds = remainingTime.inSeconds % 60;
+
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 25, horizontal: 15),
+      margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: AppStyles.card(context),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(Icons.flag, color: flagColor),
-                    SizedBox(width: 8),
-                    Text("Next Race", style: AppStyles.caption(context)),
-                  ],
-                ),
-                SizedBox(height: 10),
-                Text(widget.gpTitle, style: AppStyles.subtitle(context)),
-                const SizedBox(height: 15),
-                Center(
-                  child: Text(
-                    "In ${formatDuration(remainingTime)}",
-                    style: AppStyles.body(context).copyWith(
-                      color: flagColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // strip
+              Container(width: 5, color: flagColor),
+
+              // CONTAINER
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // SUB-HEADER
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Icon(
+                                Icons.flag_rounded,
+                                size: 14,
+                                color: flagColor,
+                              ),
+                              const SizedBox(width: 6),
+                              Text(
+                                "NEXT GRAND PRIX",
+                                style: AppStyles.extraSmallText(
+                                  context,
+                                ).copyWith(
+                                  fontWeight: FontWeight.w900,
+                                  color: AppStyles.mutedText,
+                                  letterSpacing: 0.5,
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text(
+                            "LIVE TIMING",
+                            style: AppStyles.extraSmallText(context).copyWith(
+                              fontWeight: FontWeight.w900,
+                              color: flagColor,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+
+                      // TITLE
+                      Text(
+                        widget.gpTitle.toUpperCase(),
+                        style: AppStyles.subtitle(
+                          context,
+                        ).copyWith(fontWeight: FontWeight.w900),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 14),
+
+                      // Telemetry
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              isDark
+                                  ? AppStyles.secondary.withOpacity(0.4)
+                                  : Colors.white.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: contentBorderColor),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            _buildTimeCluster(
+                              context,
+                              days,
+                              "DAYS",
+                              adaptiveTextColor,
+                            ),
+                            _buildBlockDivider(contentBorderColor),
+                            _buildTimeCluster(
+                              context,
+                              hours,
+                              "HRS",
+                              adaptiveTextColor,
+                            ),
+                            _buildBlockDivider(contentBorderColor),
+                            _buildTimeCluster(
+                              context,
+                              minutes,
+                              "MIN",
+                              adaptiveTextColor,
+                            ),
+                            _buildBlockDivider(contentBorderColor),
+                            _buildTimeCluster(
+                              context,
+                              seconds,
+                              "SEC",
+                              flagColor,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
+  }
+
+  Widget _buildTimeCluster(
+    BuildContext context,
+    int value,
+    String label,
+    Color dynamicNumColor,
+  ) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          value.toString().padLeft(2, '0'),
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            fontFamily: 'F1',
+            color: dynamicNumColor,
+          ),
+        ),
+        Text(
+          label,
+          style: AppStyles.extraSmallText(
+            context,
+          ).copyWith(color: AppStyles.mutedText, fontWeight: FontWeight.w600),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBlockDivider(Color divideLineColor) {
+    return Container(width: 1, height: 24, color: divideLineColor);
   }
 }
