@@ -72,7 +72,7 @@ class EachRace extends StatelessWidget {
                 "R${roundNumber.toString().padLeft(2, '0')}",
                 style: TextStyle(
                   fontSize: 11,
-                  fontFamily: 'monospace',
+                  fontFamily: 'F1',
                   fontWeight: FontWeight.bold,
                   color: subTextMutedColor,
                 ),
@@ -124,7 +124,7 @@ class EachRace extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 9,
                             color: subTextMutedColor,
-                            fontFamily: 'monospace',
+                            fontFamily: 'F1',
                           ),
                         ),
                       ],

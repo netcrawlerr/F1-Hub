@@ -207,6 +207,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       hintText: "Search Grand Prix...",
                       hintStyle: TextStyle(
                         fontSize: 10,
+                        fontFamily: "F1",
                         color: AppStyles.mutedText.withOpacity(0.6),
                       ),
                       prefixIcon: const Icon(

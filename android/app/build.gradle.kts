@@ -50,6 +50,20 @@ android {
     }
 }
 
+// force stable versions
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "androidx.glance") {
+            useVersion("1.1.1")
+            because("Force stable version compatible with compileSdk 36 and AGP 8.x")
+        }
+        if (requested.group == "androidx.compose.remote") {
+            useVersion("1.0.0-alpha01") 
+            because("Force version compatible with stable Glance")
+        }
+    }
+}
+
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("es.antonborri.home_widget:home_widget:0.2.1")

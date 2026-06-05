@@ -57,6 +57,7 @@ class RaceDetailScreen extends StatelessWidget {
           "RACE TELEMETRY",
           style: TextStyle(
             fontSize: 11,
+            fontFamily: "F1",
             fontWeight: FontWeight.w900,
             letterSpacing: 1.5,
             color: AppStyles.mutedText,
@@ -87,6 +88,7 @@ class RaceDetailScreen extends StatelessWidget {
                     (race['raceName'] ?? 'GRAND PRIX').toUpperCase(),
                     style: TextStyle(
                       fontSize: 16,
+                      fontFamily: "F1",
                       fontWeight: FontWeight.w900,
                       letterSpacing: 0.5,
                       color: contentTextColor,
@@ -97,6 +99,7 @@ class RaceDetailScreen extends StatelessWidget {
                     "$city, $country".toUpperCase(),
                     style: TextStyle(
                       fontSize: 9,
+                      fontFamily: "F1",
                       color:
                           isDark
                               ? AppStyles.mutedText
@@ -113,6 +116,7 @@ class RaceDetailScreen extends StatelessWidget {
               "CIRCUIT CONFIGURATION",
               style: TextStyle(
                 fontSize: 9,
+                fontFamily: "F1",
                 fontWeight: FontWeight.w800,
                 color: AppStyles.mutedText,
                 letterSpacing: 1,
@@ -149,7 +153,7 @@ class RaceDetailScreen extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 9,
                   color: subTextMutedColor,
-                  fontFamily: 'monospace',
+                  fontFamily: 'F1',
                 ),
               ),
             ),
@@ -161,6 +165,7 @@ class RaceDetailScreen extends StatelessWidget {
                 "HISTORICAL RESULTS",
                 style: TextStyle(
                   fontSize: 9,
+                  fontFamily: "F1",
                   fontWeight: FontWeight.w800,
                   color: AppStyles.mutedText,
                   letterSpacing: 1,
@@ -176,6 +181,7 @@ class RaceDetailScreen extends StatelessWidget {
               "WEEKEND SCHEDULE TIMELINE",
               style: TextStyle(
                 fontSize: 9,
+                fontFamily: "F1",
                 fontWeight: FontWeight.w800,
                 color: AppStyles.mutedText,
                 letterSpacing: 1,
@@ -262,6 +268,7 @@ class RaceDetailScreen extends StatelessWidget {
                     maxLines: 1,
                     style: TextStyle(
                       fontSize: 10,
+                      fontFamily: "F1",
                       fontWeight: FontWeight.bold,
                       color: contentTextColor,
                     ),
@@ -274,7 +281,7 @@ class RaceDetailScreen extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 10,
                     color: AppStyles.mutedText,
-                    fontFamily: 'monospace',
+                    fontFamily: 'F1',
                   ),
                 ),
               ],
